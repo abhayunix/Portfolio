@@ -1,42 +1,56 @@
-/* SMART & STRUCTURED PORTFOLIO CSS */
+/* =========================
+   SMART & STRUCTURED PORTFOLIO CSS
+   FINAL – ONE COLUMN (PRODUCTION READY)
+   ========================= */
+
+/* FONT */
 @font-face {
-    font-family: 'Lediz St';
-    src: url('abc.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
+  font-family: 'Lediz St';
+  src: url('abc.ttf') format('truetype');
 }
+/* =========================
+   SPECIAL ELITE TEXT
+   ========================= */
+
+
+
+/* ROOT */
 :root {
   --accent: #e11d48;
-  --dark-bg: #0f0f0f;
   --card-bg: rgba(255, 255, 255, 0.09);
-  --shadow: 0 0 20px rgba(225, 29, 72, 0.9);
+  --shadow: 0 0 22px rgba(225, 29, 72, 0.85);
 }
 
+/* RESET */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* BODY */
 body {
   font-family: 'Montserrat', sans-serif;
+    font-size: 20px;
+  line-height: 1.7;          /* 👈 line ke beech gap */
+  letter-spacing: 0.6px;
   background: linear-gradient(135deg, #2b0212, #3b0b1a);
   color: #fff;
-  line-height: 1.6;
   overflow-x: hidden;
-  scroll-behavior: smooth;
 }
 
-/* NAVIGATION TOGGLE */
+/* =========================
+   NAV TOGGLE
+   ========================= */
 .two-line-toggle {
-  position: absolute;
+  position: fixed;
+  top: 16px;
   left: 20px;
-  top: 14px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
   cursor: pointer;
-  z-index: 200;
+  z-index: 300;
 }
 
 .two-line-big {
@@ -53,24 +67,35 @@ body {
   border-radius: 4px;
 }
 
-/* SIDE PANEL */
+/* =========================
+   SIDE PANEL
+   ========================= */
 .panel {
   position: fixed;
+  top: 60px;
   left: 20px;
-  top: 6px;
   width: 260px;
-  background: var(--card-bg);
-  border-radius: 10px;
+  background: rgba(20, 20, 20, 0.85);
+  border-radius: 12px;
   padding: 1rem;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
   transform: scaleY(0);
   transform-origin: top;
   opacity: 0;
   visibility: hidden;
   transition: all 0.3s ease;
-  backdrop-filter: blur(6px);
-  z-index: 150;
+  z-index: 250;
 }
+
+.theme-swatch[data-theme="red"] { background:#e11d48; }
+.theme-swatch[data-theme="green"] { background:#10b981; }
+.theme-swatch[data-theme="black"] { background:#111827; }
+.theme-swatch[data-theme="gold"] { background:#FFD700; }
+.theme-swatch[data-theme="blue"] { background:#1E3A8A; }
+.theme-swatch[data-theme="purple"] { background:linear-gradient(135deg,#6D28D9,#9333EA); }
+.theme-swatch[data-theme="teal"] { background:#14B8A6; }
+.theme-swatch[data-theme="rosegold"] { background:linear-gradient(135deg,#B76E79,#FFDAB9); }
 
 .panel.open {
   transform: scaleY(1);
@@ -86,72 +111,60 @@ body {
 }
 
 .panel .links a {
-  text-decoration: none;
   color: #fff;
-  padding: 6px;
+  text-decoration: none;
+  padding: 6px 8px;
   border-radius: 6px;
-  transition: background 0.2s;
 }
 
 .panel .links a:hover {
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   color: #000;
 }
 
+/* THEME OPTIONS */
 .theme-options {
   display: flex;
-  gap: 8px;
+  gap: 10px;
 }
 
 .theme-swatch {
-  width: 30px;
-  height: 20px;
-  border-radius: 4px;
+  width: 32px;
+  height: 22px;
+  border-radius: 6px;
+  border: 2px solid #fff;
   cursor: pointer;
-  border: 2px solid rgba(255,255,255,0.2);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
 }
 
-.theme-swatch[data-theme="red"] { background:#e11d48; }
-.theme-swatch[data-theme="green"] { background:#10b981; }
-.theme-swatch[data-theme="black"] { background:#111827; }
-.theme-swatch[data-theme="gold"] { background:#FFD700; }
-.theme-swatch[data-theme="blue"] { background:#1E3A8A; }
-.theme-swatch[data-theme="purple"] { background:linear-gradient(135deg,#6D28D9,#9333EA); }
-.theme-swatch[data-theme="teal"] { background:#14B8A6; }
-.theme-swatch[data-theme="rosegold"] { background:linear-gradient(135deg,#B76E79,#FFDAB9); }
-
-/* LAYOUT */
+/* =========================
+   MAIN LAYOUT
+   ========================= */
 .container {
   display: flex;
-  margin-top: 18px;
-}
-
-/* PROFILE SIDEBAR */
-.profile {
-  position: fixed;
-  top: 50px;
-  left: 20px;
-  width: 300px;
-  background: var(--card-bg);
-  padding: 1.5rem;
-  border-radius: 15px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.5);
-  text-align: center;
-  transition: transform 0.3s ease;
-  display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  align-items: center;
+  gap: 2.5rem;
+  padding: 100px 1rem 2rem;
 }
 
-.profile:hover {
-  transform: scale(1.05);
-  box-shadow: var(--shadow);
+/* =========================
+   PROFILE CARD
+   ========================= */
+.profile {
+  width: 100%;
+  max-width: 900px;
+  background: var(--card-bg);
+  padding: 2.2rem;
+  border-radius: 18px;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.55);
 }
 
 .profile-img {
-  width: 180px;
-  height: 180px;
-  border-radius: 49%;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
   border: 4px solid var(--accent);
   margin-bottom: 1rem;
   animation: glow 2s infinite alternate;
@@ -159,69 +172,96 @@ body {
 
 @keyframes glow {
   from { box-shadow: 0 0 10px var(--accent); }
-  to { box-shadow: 0 0 25px var(--accent); }
+  to   { box-shadow: 0 0 26px var(--accent); }
 }
-
 
 .profile h1 {
-    font-family: 'Lediz St', sans-serif;
-    font-size: 50px;
-    color: var(--accent);
-}
-.dot-font {
-    font-family: 'Lediz St', monospace;
+  font-family: 'Lediz St', sans-serif;
+  font-size: 46px;
+  color: var(--accent);
 }
 
 .profile h2 {
   font-family: 'Lediz St', sans-serif;
   font-size: 22px;
-  margin-bottom: 0.5rem;
-}
-.content h3 {
-  font-family: 'Lediz St', sans-serif;
-  font-size: 22px;
-  margin-bottom: 0.5rem;
+  opacity: 0.9;
 }
 
+/* =========================
+   PROFILE SOCIALS – FINAL
+   ========================= */
 .profile-socials {
+  width: 100%;
+  margin-top: 1.6rem;
   display: flex;
   flex-direction: column;
-  gap: 0.7rem;
-  margin-top: 1rem;
+  align-items: center;
+  gap: 1rem;
 }
 
 .profile-socials a {
-  font-family: 'Lediz St', sans-serif;
+  width: 100%;
+  max-width: 80%;
+
   display: flex;
   align-items: center;
-  gap: 8px;
-  text-decoration: none;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 10px 15px;
-  border-radius: 10px;
-  color: #fff;
+  gap: 14px;
+
+  padding: 14px 22px;
+  border-radius: 14px;
+
+  font-size: 15px;
   font-weight: 500;
-  transition: all 0.3s ease;
-  justify-content: center;
+  letter-spacing: 0.4px;
+
+  color: #fff;
+  text-decoration: none;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.16),
+    rgba(255, 255, 255, 0.06)
+  );
+
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(6px);
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    background 0.3s ease,
+    color 0.3s ease;
 }
 
 .profile-socials a:hover {
   background: var(--accent);
   color: #000;
-  transform: scale(1.05);
-  box-shadow: 0 0 12px var(--accent);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(225, 29, 72, 0.55);
 }
 
 .profile-socials img {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  opacity: 0.95;
 }
 
-/* CONTENT */
+/* OPTIONAL PLATFORM AUTHORITY */
+.profile-socials a.github:hover {
+  box-shadow: 0 12px 30px rgba(255, 255, 255, 0.35);
+}
+
+.profile-socials a.linkedin:hover {
+  box-shadow: 0 12px 30px rgba(10, 102, 194, 0.55);
+}
+
+/* =========================
+   CONTENT SECTIONS
+   ========================= */
 .content {
-  margin-left: 320px;
+  width: 100%;
   max-width: 900px;
-  padding: 2rem;
 }
 
 .section-block {
@@ -229,77 +269,53 @@ body {
   padding: 2rem;
   margin-bottom: 2rem;
   border-radius: 15px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.5);
-  transition: all 0.4s ease, transform 0.3s ease-in-out;
-  animation: fadeUp 1s ease forwards;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.55);
+  animation: fadeUp 0.8s ease forwards;
   opacity: 0;
   transform: translateY(30px);
 }
 
 .section-block:hover {
   box-shadow: var(--shadow);
-  transform: translateY(-5px) scale(1.02);
+  transform: translateY(-4px);
 }
 
 .section-title {
+  font-family: 'Lediz St', sans-serif;
   font-size: 22px;
   color: var(--accent);
-  margin-bottom: 1rem;
   border-left: 4px solid var(--accent);
   padding-left: 10px;
-}
-
-ul {
-  padding-left: 1.5rem;
-  text-align: left;
-}
-
-li {
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .socials {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 1rem;
+display: flex;
+flex-wrap: wrap;
+gap: 1rem;
 }
 
 .socials a {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  text-decoration: none;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 10px 15px;
-  border-radius: 10px;
-  color: #fff;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  min-width: 120px;
-  box-shadow: 0 0 8px rgba(0,0,0,0.4);
+display: flex;
+align-items: center;
+gap: 10px;
+background: rgba(255,255,255,0.1);
+padding: 10px 15px;
+border-radius: 10px;
+color: #fff;
+text-decoration: none;
 }
 
-.socials a:hover {
-  background: var(--accent);
-  color: #000;
-  transform: scale(1.08);
-  box-shadow: 0 0 15px var(--accent);
-}
-
+/* ICON SIZE FIX */
 .socials img {
-  width: 20px;
-  height: 20px;
+width: 18px;
+height: 18px;
+object-fit: contain;
+flex-shrink: 0;
 }
-
-button, .card, .profile-socials a, section {
-  transition: all 0.3s ease;
-}
-
-button:hover, .card:hover {
-  background: var(--accent) !important;
-  color: #000 !important;
-  box-shadow: 0 0 12px var(--accent);
+.socials a:hover {
+background: var(--accent);
+color: #000;
 }
 
 @keyframes fadeUp {
@@ -309,32 +325,21 @@ button:hover, .card:hover {
   }
 }
 
+/* =========================
+   FOOTER
+   ========================= */
 footer {
-  text-align: center;
-    background: blanchedalmond;
-    height: 5px;
-  padding: 0.5px;
+  width: 100%;
+  height: 5px;
+  background: blanchedalmond;
   opacity: 0.7;
 }
-.mini-quote {
-  margin-top: 20px;
-  padding: 15px;
-  background: rgba(255,255,255,0.06);
-  border-radius: 12px;
-  font-style: italic;
-  font-size: 14px;
-}
 
-.pulse-line {
-  width: 100%;
-  height: 3px;
-  background: var(--accent);
-  margin-top: 10px;
-  border-radius: 10px;
-  animation: pulseGlow 2s infinite alternate;
-}
-
-@keyframes pulseGlow {
-  0% { box-shadow: 0 0 4px var(--accent); }
-  100% { box-shadow: 0 0 15px var(--accent); }
+/* =========================
+   RESPONSIVE
+   ========================= */
+@media (max-width: 768px) {
+  .profile h1 {
+    font-size: 38px;
+  }
 }
