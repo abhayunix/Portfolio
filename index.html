@@ -1,17 +1,14 @@
-<!-- SMART & STRUCTURED PORTFOLIO TEMPLATE -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Abhay Kumar - Portfolio</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
-  <link href="abc.ttf"/>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Abhay Kumar | Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- NAVIGATION TOGGLE -->
+
   <nav>
     <div class="two-line-toggle" id="twoLineToggle">
       <span class="two-line-big"></span>
@@ -19,121 +16,141 @@
     </div>
   </nav>
 
-  <!-- SIDE PANEL -->
   <div class="panel" id="navPanel">
     <div class="links">
       <a href="#career">Career</a>
       <a href="#education">Education</a>
+      <a href="#skills">Skills</a>
       <a href="#projects">Projects</a>
       <a href="#internships">Internships</a>
-      <a href="#skills">Skills</a>
       <a href="#certifications">Certifications</a>
-      <a href="#achievements">Achievements</a>
-      <a href="#extra">Extra</a>
-      <a href="#socials">Social</a>
+      <a href="#socials">Socials</a>
     </div>
-    <p>Select Theme:</p>
-    <div class="theme-options">
-      <div class="theme-swatch" data-theme="red"></div>
-      <div class="theme-swatch" data-theme="green"></div>
-      <div class="theme-swatch" data-theme="black"></div>
-      <div class="theme-swatch" data-theme="gold"></div>
-      <div class="theme-swatch" data-theme="blue"></div>
-      <div class="theme-swatch" data-theme="purple"></div>
-      <div class="theme-swatch" data-theme="teal"></div>
-      <div class="theme-swatch" data-theme="rosegold"></div>
+    <div class="theme-section">
+      <p>SELECT THEME</p>
+      <div class="theme-options">
+        <div class="theme-swatch" data-theme="red"></div>
+        <div class="theme-swatch" data-theme="green"></div>
+        <div class="theme-swatch" data-theme="blue"></div>
+        <div class="theme-swatch" data-theme="purple"></div>
+        <div class="theme-swatch" data-theme="gold"></div>
+      </div>
     </div>
   </div>
 
-  <!-- MAIN LAYOUT -->
   <div class="container">
-    <!-- PROFILE SIDEBAR -->
-    <aside class="profile">
-      <div class="profile-header">
-        <img class="profile-img" src="https://ik.imagekit.io/rv0oq2tl2/abhay.jpg" alt="Abhay Kumar" />
-        <h1><span class="dot-font">ABHAY KUMAR</span></h1><br>
-        <h2>ARTIFICIAL INTELLIGENCE ENGINEER</h2>
+    <header class="main-header">
+      <div class="header-content">
+        <div class="profile-area">
+          <img src="https://ik.imagekit.io/rv0oq2tl2/Abs.png?updatedAt=1756230855599" alt="Abhay Kumar" class="profile-img">
+        </div>
+        <div class="info-area">
+          <h1 class="name">ABHAY <span class="accent-text">KUMAR</span></h1>
+          <h2 class="subtitle">AI & MACHINE LEARNING ENGINEER</h2>
+          <div class="contact-links">
+            <a href="mailto:abhaykumar76005@gmail.com"><img src="https://cdn-icons-png.flaticon.com/512/732/732200.png"> E-Mail</a>
+            <a href="https://github.com/abhayunix"><img src="https://cdn-icons-png.flaticon.com/512/733/733553.png"> GitHub</a>
+            <a href="https://in.linkedin.com/in/abhayunix"><img src="https://cdn-icons-png.flaticon.com/512/145/145807.png"> LinkedIn</a>
+            <button class="resume-btn" onclick="window.print()">Download CV</button>
+          </div>
+        </div>
       </div>
-   
-      <div class="profile-socials">
-        <a href="mailto:abhaykumar76005@gmail.com" target="_blank"> <img src="https://cdn-icons-png.flaticon.com/512/732/732200.png" /> E-Mail </a>
-        <a href="https://github.com/abhayunix" target="_blank"> <img src="https://cdn-icons-png.flaticon.com/512/733/733553.png" /> GitHub </a>
-        <a href="https://in.linkedin.com/in/abhayunix" target="_blank"> <img src="https://cdn-icons-png.flaticon.com/512/145/145807.png" /> LinkedIn </a>
-      </div>
-    </aside>
+    </header>
 
-    <!-- PAGE CONTENT -->
-    <div class="content">
-      <!-- CAREER OBJECTIVE -->
-      <section id="career" class="section-block">
-        <h3 class="section-title"><b>Career Objective</b></h3>
-        <p>To leverage my skills in AI, ML, and modern software engineering to contribute to groundbreaking technology and grow as an engineer.</p>
+    <div class="dashboard-grid">
+      <section id="career" class="card col-3">
+        <h3 class="card-title">Career Objective</h3>
+        <p>Aspiring AI Engineer with a strong foundation in Machine Learning and Full-Stack Development. Passionate about building intelligent systems that solve complex real-world problems.</p>
       </section>
 
-      <!-- EDUCATION -->
-      <section id="education" class="section-block">
-        <h3 class="section-title"><b>Education</b></h3>
-        <ul>
-          <li><b>B.Tech :</b> CSE (AI & ML), School Of Management Sciences, Lucknow (2023–2027)</li>
-          <li><b>Intermediate :</b> PCM, Bapu Krishak Intermediate College, Deoria (2022–2023)</li>
-          <li><b>Matriculation :</b> I.B.S Intermediate College, Deoria (2020–2021)</li>
+      <section id="education" class="card col-4">
+        <h3 class="card-title">Education</h3>
+        <div class="item">
+          <strong>B.Tech CSE (AI & ML)</strong>
+          <p>School of Management Science, Lucknow | 2023–27</p>
+        </div>
+        <div class="item">
+          <strong>Intermediate</strong>
+          <p>Bapu Krishak Inter College, Deoria | 2022-2023</p>
+        </div>
+        <div class="item">
+          <strong>Matriculation</strong>
+          <p>I.B.S Intermediate College, Deoria | 2020-2021</p>
+      </section>
+
+      <section id="skills" class="card full-width">
+        <h3 class="card-title">Technical Skills</h3>
+        <div class="skill-tags">
+          <span>Python</span><span>C++</span><span>Git</span><span>Flutter</span><span>HTML</span><span>CSS</span>
+        </div>
+      </section>
+
+      <section id="projects" class="card col-4">
+        <h3 class="card-title">Key Projects</h3>
+        <div class="project-grid">
+          <strong>Telegram GPT Bot:</strong> 
+          <p> AI chatbot using Gemini API.</p>
+          <strong>Data Visualizer:</strong> 
+          <p>Python-based analysis & plotting tool</p>
+        </div>
+      </section>
+
+      <section id="internships" class="card col-3">
+        <h3 class="card-title">Internships</h3>
+        <strong>Alfido</strong>
+        <p>Web Developer Intern - UI/UX focus.</p>
+      </section>
+
+      <section id="certifications" class="card full-width">
+        <h3 class="card-title">Certifications</h3>     
+          <strong>Google Cloud: </strong>
+          <p>Cyber Security</p>
+          <strong>IBM: </strong>
+          <p>Chatbot Development</p>
+          <strong>Udemy: </strong>
+          <p> Full Stack Web Dev</p>
         </ul>
       </section>
 
-      <!-- PROJECTS -->
-      <section id="projects" class="section-block">
-        <h3 class="section-title">Projects</h3>
-        <ul>
-          <li>🤖 <b>Telegram GPT Bot :</b> AI chatbot using Gemini API.</li>
-          <li>🖥️ <b>Portfolio Website :</b> Responsive UI with dynamic themes.</li>
-          <li>📊 <b>Data Visualizer :</b> Python-based analysis & plotting tool.</li>
-        </ul>
-      </section>
-
-      <!-- INTERNSHIPS -->
-      <section id="internships" class="section-block">
-        <h3 class="section-title"><b>Internships</b></h3>
-        <ul>
-          <li><b>Alfido :</b> Web Developer Intern (Front-end modules & UI components)</li>
-        </ul>
-      </section>
-
-      <!-- SKILLS -->
-      <section id="skills" class="section-block">
-        <h3 class="section-title"><b>Skills</b></h3>
-        <ul>
-          <li><b>Programming :</b> Python, C++, Java, JavaScript</li>
-          <li><b>Frameworks :</b> React, Node.js, Flask</li>
-          <li><b>Tools :</b> Git, Linux, Firebase, Replit</li>
-        </ul>
-      </section>
-
-      <!-- CERTIFICATIONS -->
-      <section id="certifications" class="section-block">
-        <h3 class="section-title">Certifications</h3>
-        <ul>
-          <li><b>Cyber Security :</b> Google Cloud</li>
-          <li><b>IBM Cloud Computing :</b> Chatbot Development</li>
-          <li><b>Web Development Bootcamp :</b> Udemy</li>
-        </ul>
-      </section>
-
-      <!-- SOCIAL MEDIA -->
-      <section id="socials" class="section-block">
-        <h3 class="section-title">Social Media</h3>
-        <p><b>Connect with me across platforms</b></p>
-        <div class="socials">
-          <a href="https://x.com/abhayunix" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/5968/5968958.png" />X </a>       
-          <a href="https://youtube.com/@abhayunix" target="_blank"> <img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" /> YouTube </a>
-          <a href="https://t.me/abhayunix" target="_blank"> <img src="https://cdn-icons-png.flaticon.com/512/2111/2111644.png" /> Telegram </a>
-          <a href="https://www.facebook.com/abhayunix" target="_blank"> <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" /> Facebook </a>
-          <a href="https://www.instagram.com/abhayunix" target="_blank"> <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" /> Instagram </a>
-         <a href="https://discord.gg/abhayunix" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" />Discord</a>        </div>
+      <section id="socials" class="card full-width">
+        <h3 class="card-title">Connect with Me</h3>
+        <div class="social-grid">
+          <a href="https://x.com/abhayunix" class="s-box x-box">
+            <img src="https://cdn-icons-png.flaticon.com/512/5968/5968958.png">
+            <span>X</span>
+          </a>
+          <a href="https://youtube.com/abhayunix" class="s-box yt-box">
+            <img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png">
+            <span>YouTube</span>
+          </a>
+          <a href="https://t.me/unix" class="s-box tg-box">
+            <img src="https://cdn-icons-png.flaticon.com/512/2111/2111644.png">
+            <span>Telegram</span>
+          </a>
+          <a href="https://www.instagram.com/abhayunix" class="s-box ig-box">
+            <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png">
+            <span>Instagram</span>
+          </a>
+          <a href="https://t.me/abhayunix" class="s-box ig-telegram">
+            <img src="https://cdn-icons-png.flaticon.com/512/2111/2111644.png">
+            <span>Telegramgram</span>
+          </a>
+          <a href="https://www.facebook.com/abhayunix" class="s-box fc-box">
+            <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png">
+            <span>Facebook</span>
+          </a>
+          <a href="https://discord.gg/abhayunix" class="s-box dc-box">
+            <img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png">
+            <span>Discord</span>
+          </a>
+        </div>
       </section>
     </div>
+    <br>
+    <footer class="main-footer">
+      <p>© 2026 Abhay Kumar | abhayunix</p>
+    </footer>
   </div>
-
-  <footer><h4>© 2025 Abhay Kumar • Design & Developed by Abhay</h4></footer>
 
   <script src="script.js"></script>
 </body>
