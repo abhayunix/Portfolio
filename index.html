@@ -4,17 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- SEO -->
 <title>Abhay Kumar | AI & Machine Learning Engineer</title>
-<meta name="description" content="Abhay Kumar – AI & Machine Learning Engineer. Skilled in Python, ML, backend systems, and modern web technologies.">
-<meta name="keywords" content="Abhay Kumar, AI Engineer, Machine Learning, Python Developer, Portfolio">
-<meta name="author" content="Abhay Kumar">
-
-<!-- OpenGraph -->
-<meta property="og:title" content="Abhay Kumar | AI & ML Engineer">
-<meta property="og:description" content="AI & Machine Learning Engineer portfolio showcasing skills, projects, and experience.">
-<meta property="og:image" content="https://ik.imagekit.io/rv0oq2tl2/abhay.jpg">
-<meta property="og:type" content="website">
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
@@ -24,6 +14,7 @@
   --card:rgba(255,255,255,.06);
   --text:#e5e7eb;
   --muted:#9ca3af;
+  --crystal:255,255,255;
 }
 
 @keyframes gradientBorder{
@@ -38,8 +29,8 @@ body{
   font-family:Inter,sans-serif;
   background:linear-gradient(180deg,#020617,#0b1024);
   color:var(--text);
-  line-height:1.8
- ;
+  line-height:1.7;
+  font-size:17px;
 }
 
 /* NAV */
@@ -54,7 +45,7 @@ nav{
 .nav{
   max-width:1100px;
   margin:auto;
-  padding:10px 16px;
+  padding:12px 16px;
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -63,36 +54,34 @@ nav{
   color:var(--muted);
   margin-left:14px;
   text-decoration:none;
-  font-size:13px;
+  font-size:14px;
 }
 .nav a:hover{color:white}
 
 /* HERO */
 .hero{
   max-width:1100px;
-  margin:40px auto;
+  margin:42px auto;
   padding:0 16px;
   display:grid;
   grid-template-columns:220px 1fr;
-  gap:26px;
+  gap:28px;
   position:relative;
-  overflow:hidden;
 }
 
-/* Cursor glow */
 .hero::after{
   content:"";
   position:absolute;
   inset:-120px;
   background:radial-gradient(
-    400px circle at var(--x,50%) var(--y,50%),
-    rgba(168,85,247,.12),
-    transparent 40%
+    420px circle at var(--x,50%) var(--y,50%),
+    rgba(168,85,247,.14),
+    transparent 42%
   );
   pointer-events:none;
 }
 
-/* Profile */
+/* PROFILE */
 .profile-border{
   padding:4px;
   border-radius:20px;
@@ -111,14 +100,12 @@ nav{
   width:220px;
   border-radius:17px;
   display:block;
-  background:#020617;
 }
 
-/* Name */
-.hero h1{
-  font-size:40px;
-  font-weight:700;
-}
+/* TEXT */
+.hero h1{font-size:42px;font-weight:700}
+.hero h2{font-size:18px;margin:6px 0 10px}
+
 .gradient-text{
   background:linear-gradient(
     270deg,
@@ -133,27 +120,20 @@ nav{
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
-.hero h2{
-  font-size:16px;
-  font-weight:500;
-  color:red;
-  margin:6px 0 10px;
-}
-.hero p{font-size:14px;max-width:520px}
 
 /* SECTIONS */
 section{
   max-width:1100px;
-  margin:32px auto;
+  margin:34px auto;
   padding:0 16px;
 }
 .title{
-  font-size:19px;
-  margin-bottom:10px;
+  font-size:20px;
+  margin-bottom:12px;
   font-weight:600;
 }
 
-/* CARDS */
+/* GRID & CARD */
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
@@ -161,9 +141,9 @@ section{
 }
 .card{
   background:var(--card);
-  padding:14px 16px;
+  padding:16px;
   border-radius:14px;
-  border:1px solid rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.08);
   font-size:16px;
 }
 
@@ -171,14 +151,14 @@ section{
 .tags{
   display:flex;
   flex-wrap:wrap;
-  gap:9px;
+  gap:10px;
 }
 .tags span{
-  padding:5px 12px;
+  padding:5px 14px;
   border-radius:999px;
-  font-size:16px;
+  font-size:15px;
   background:
-    linear-gradient(#0207,#0207) padding-box,
+    linear-gradient(#fff,#ffff) padding-box,
     linear-gradient(
       270deg,
       #4285f4,
@@ -188,14 +168,7 @@ section{
       #a855f7
     ) border-box;
   border:2px solid transparent;
-  background-size:100% 100%,400% 400%;
   animation:gradientBorder 12s linear infinite;
-  transition:.2s;
-}
-.tags span:hover{
-  animation-duration:4s;
-  transform:translateY(-1px);
-  box-shadow:0 0 14px rgba(168,85,247,.35);
 }
 
 /* SOCIALS */
@@ -205,18 +178,13 @@ section{
   gap:14px;
 }
 .socials a{
-  width:42px;
-  height:42px;
+  width:44px;
+  height:44px;
   display:flex;
   align-items:center;
   justify-content:center;
   background:rgba(255,255,255,.08);
   border-radius:12px;
-  transition:.25s;
-}
-.socials a:hover{
-  background:rgba(255,255,255,.14);
-  transform:translateY(-2px);
 }
 .socials img{width:20px;filter:invert(1)}
 
@@ -224,12 +192,13 @@ section{
 footer{
   text-align:center;
   padding:22px;
-  font-size:13px;
+  font-size:14px;
   color:var(--muted);
 }
 
 /* MOBILE */
 @media(max-width:760px){
+  body{font-size:16px}
   .hero{grid-template-columns:1fr;text-align:center}
   .profile-border{margin:auto}
   .socials{justify-content:center}
@@ -242,22 +211,27 @@ footer{
     --card:#ffffff;
     --text:#0f172a;
     --muted:#475569;
+    --crystal:0,0,0;
   }
   body{background:linear-gradient(180deg,#f8fafc,#e2e8f0)}
-  nav{background:rgba(255,255,255,.85)}
+  nav{background:rgba(255,255,255,.9)}
+  .card{border:1px solid rgba(0,0,0,.08)}
   .socials img{filter:none}
 }
 
-/* PRINT */
-@media print{
-  nav,.socials{display:none}
-  body{background:white;color:black}
-  .card{background:white;border:1px solid #ddd}
+/* CANVAS */
+#crystalFlow{
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
 }
 </style>
 </head>
 
 <body>
+
+<canvas id="crystalFlow"></canvas>
 
 <nav>
   <div class="nav">
@@ -269,17 +243,19 @@ footer{
       <a href="#projects">Projects</a>
       <a href="#internship">Internship</a>
       <a href="#certs">Certifications</a>
+      <a href="#socials">Contact</a>
     </div>
   </div>
 </nav>
 
+<!-- HERO -->
 <div class="hero">
   <div class="profile-border">
     <img src="https://ik.imagekit.io/rv0oq2tl2/abhay.jpg">
   </div>
   <div>
     <h1>ABHAY <span class="gradient-text">KUMAR</span></h1>
-    <h2><span class="gradient-text">AI & Machine Learning Engineer</span></h2>
+    <h2 class="gradient-text">AI & Machine Learning Engineer</h2>
     <p>
       AI engineering undergraduate with hands-on experience in Python,
       machine learning, backend logic, and API-driven systems.
@@ -287,58 +263,64 @@ footer{
   </div>
 </div>
 
+<!-- CAREER -->
 <section id="career">
-  <h2 class="title">Career Objective</h2>
+  <h2 class="title gradient-text">Career Objective</h2>
   <div class="card">
     Motivated AI & Machine Learning undergraduate seeking opportunities
     in AI/ML or Software Engineering roles.
   </div>
 </section>
 
+<!-- EDUCATION -->
 <section id="education">
-  <h2 class="title">Education</h2>
+  <h2 class="title gradient-text">Education</h2>
   <div class="grid">
-    <div class="card"><strong>B.Tech CSE (AI & ML)</strong><br>School of Management Science, Lucknow <br><small>2023–2027</small></div>
+    <div class="card"><strong>B.Tech CSE (AI & ML)</strong><br>School of Management Science, Lucknow<br><small>2023–2027</small></div>
     <div class="card"><strong>Intermediate</strong><br>Bapu Krishak Inter College, Deoria<br><small>2022–2023</small></div>
-    <div class="card"><strong>Matriculation</strong><br>I.B.S Intermediate College, Deoria <br><small>2020–2021</small></div>
+    <div class="card"><strong>Matriculation</strong><br>I.B.S Intermediate College, Deoria<br><small>2020–2021</small></div>
   </div>
 </section>
 
+<!-- SKILLS -->
 <section id="skills">
-  <h2 class="title">Technical Skills</h2>
+  <h2 class="title gradient-text">Technical Skills</h2>
   <div class="card tags">
     <span>Python</span><span>Java</span><span>C++</span>
-    <span>Git</span>
-    <span>Flutter</span><span>HTML</span><span>CSS</span>
+    <span>Git</span><span>Flutter</span><span>HTML</span><span>CSS</span>
   </div>
 </section>
 
+<!-- PROJECTS -->
 <section id="projects">
-  <h2 class="title">Projects</h2>
+  <h2 class="title gradient-text">Projects</h2>
   <div class="grid">
     <div class="card"><strong>Telegram GPT Bot</strong><p>Gemini API powered chatbot</p></div>
     <div class="card"><strong>Data Visualizer</strong><p>Python analysis & plotting tool</p></div>
   </div>
 </section>
 
+<!-- INTERNSHIP -->
 <section id="internship">
-  <h2 class="title">Internship</h2>
+  <h2 class="title gradient-text">Internship</h2>
   <div class="card">
     <strong>Web Developer Intern – Alfido</strong>
     <p>UI/UX focused responsive development.</p>
   </div>
 </section>
 
+<!-- CERTIFICATIONS -->
 <section id="certs">
-  <h2 class="title">Certifications</h2>
+  <h2 class="title gradient-text">Certifications</h2>
   <div class="grid">
     <div class="card"><strong>Google Cloud</strong><br>Cyber Security</div>
     <div class="card"><strong>IBM</strong><br>Chatbot Development</div>
   </div>
 </section>
 
-<section>
-  <h2 class="title">Connect with Me</h2>
+<!-- SOCIALS -->
+<section id="socials">
+  <h2 class="title gradient-text">Connect with Me</h2>
   <div class="socials">
     <a href="mailto:abhaykumar76005@gmail.com"><img src="https://cdn-icons-png.flaticon.com/512/732/732200.png"></a>
     <a href="https://github.com/abhayunix"><img src="https://cdn-icons-png.flaticon.com/512/733/733553.png"></a>
@@ -352,16 +334,59 @@ footer{
   </div>
 </section>
 
-<footer>
-© 2026 Abhay Kumar | abhayunix
-</footer>
+<footer>© 2026 Abhay Kumar | abhayunix</footer>
 
 <script>
 document.addEventListener("mousemove",e=>{
   document.documentElement.style.setProperty("--x",e.clientX+"px");
   document.documentElement.style.setProperty("--y",e.clientY+"px");
 });
+
+const canvas=document.getElementById("crystalFlow");
+const ctx=canvas.getContext("2d");
+let w,h,particles=[];
+
+function resize(){
+  w=canvas.width=window.innerWidth;
+  h=canvas.height=window.innerHeight;
+}
+window.addEventListener("resize",resize);
+resize();
+
+class Crystal{
+  constructor(){this.reset()}
+  reset(){
+    this.x=Math.random()*w;
+    this.y=Math.random()*h;
+    this.r=Math.random()*1.8+.6;
+    this.vy=Math.random()*.4+.1;
+    this.vx=Math.random()*.2-.1;
+    this.alpha=Math.random()*.35+.05;
+  }
+  draw(){
+    const c=getComputedStyle(document.documentElement)
+      .getPropertyValue("--crystal").trim();
+    ctx.beginPath();
+    ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(${c},${this.alpha})`;
+    ctx.fill();
+  }
+  update(){
+    this.y-=this.vy;
+    this.x+=this.vx;
+    if(this.y<-10||this.x<-10||this.x>w+10){
+      this.reset();this.y=h+10;
+    }
+  }
+}
+
+for(let i=0;i<120;i++)particles.push(new Crystal());
+
+(function animate(){
+  ctx.clearRect(0,0,w,h);
+  particles.forEach(p=>{p.update();p.draw()});
+  requestAnimationFrame(animate);
+})();
 </script>
-</body>
+</body>                                         
 </html>
-          
