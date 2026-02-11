@@ -6,19 +6,4 @@
     <priority>1.0</priority>
   </url>
 
-  <url>
-    <loc>https://abhayunix.in/about.html</loc>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://abhayunix.in/projects.html</loc>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://abhayunix.in/contact.html</loc>
-    <priority>0.6</priority>
-  </url>
-
 </urlset>
