@@ -113,7 +113,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-weight:3
 nav{
   position:fixed;inset:0 0 auto 0;z-index:200;
   display:flex;justify-content:space-between;align-items:center;
-  padding:15px 60px;
+  padding:24px 64px;
   transition:background .3s,backdrop-filter .3s;
 }
 nav.scrolled{background:var(--nav-bg);backdrop-filter:blur(16px);}
@@ -124,10 +124,11 @@ nav::after{content:'';position:absolute;bottom:0;left:64px;right:64px;height:1px
 .nav-links a{font-size:.7rem;letter-spacing:.13em;text-transform:uppercase;text-decoration:none;color:var(--soft);transition:color .2s;}
 .nav-links a:hover{color:var(--ink);}
 .nav-badge{font-size:.6rem;background:var(--accent);color:#fff;padding:3px 10px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;margin-left:6px;}
+#hamburger{display:none;}
 
 /* HERO */
 #hero{
-  padding:135px 64px 80px;position:relative;overflow:hidden;
+  padding:120px 64px 80px;position:relative;overflow:hidden;
   display:flex;flex-direction:column;justify-content:flex-start;
 }
 .hero-bg-text{
@@ -177,7 +178,7 @@ h1.hero-name em{font-style:italic;color:var(--accent2);}
 }
 .btn-ghost:hover{color:var(--ink);border-color:var(--ink);}
 .hero-scroll{
-  position:absolute;right:64px;bottom:80px;
+  position:absolute;right:64px;bottom:40px;
   display:flex;flex-direction:column;align-items:center;gap:10px;
   opacity:0;animation:up .7s 1.1s forwards;
 }
@@ -314,11 +315,12 @@ footer a:hover{color:var(--accent);}
 .d1{transition-delay:.1s;}.d2{transition-delay:.2s;}.d3{transition-delay:.3s;}
 
 /* RESPONSIVE */
+/* ── TABLET ── */
 @media(max-width:900px){
-  nav,section,.divider,footer{padding-left:20px;padding-right:20px;}
-  nav::after{left:20px;right:20px;}
-  #hero{padding:90px 20px 60px;}
-  .hero-scroll{right:20px;}
+  nav,section,.divider,footer{padding-left:24px;padding-right:24px;}
+  nav{padding:18px 24px;}
+  nav::after{left:24px;right:24px;}
+  #hero{padding:90px 24px 60px;}
   .about-grid,.contact-grid{grid-template-columns:1fr;gap:40px;}
   .about-left{position:static;}
   .skills-wrap,.certs-grid{grid-template-columns:1fr;}
@@ -326,10 +328,93 @@ footer a:hover{color:var(--accent);}
   .proj-tags,.proj-arrow{display:none;}
   .edu-item{grid-template-columns:1fr;gap:6px;}
   .edu-badge,.intern-card .intern-tag{display:none;}
-  .intern-card{grid-template-columns:1fr;}
+  .intern-card{grid-template-columns:1fr;padding:32px 24px;}
   .socials-grid{grid-template-columns:1fr;}
   footer{flex-direction:column;gap:6px;text-align:center;}
   #theme-btn{bottom:16px;right:16px;}
+}
+
+/* ── MOBILE ── */
+@media(max-width:600px){
+  /* NAV - hamburger style on mobile */
+  nav{padding:16px 20px;flex-wrap:wrap;gap:0;}
+  nav::after{left:0;right:0;}
+  .nav-links{
+    display:none;
+    width:100%;flex-direction:column;gap:0;
+    background:var(--bg);
+    border-top:1px solid var(--line);
+    padding:8px 0;
+    position:absolute;top:100%;left:0;right:0;
+  }
+  .nav-links.open{display:flex;}
+  .nav-links li{width:100%;}
+  .nav-links a{
+    display:block;padding:12px 20px;
+    font-size:.75rem;letter-spacing:.1em;
+    border-bottom:1px solid var(--line);
+  }
+  .nav-links a:last-child{border-bottom:none;}
+  .nav-badge{display:none;}
+  #hamburger{
+    display:flex;flex-direction:column;gap:5px;
+    background:none;border:none;cursor:none;padding:4px;
+  }
+  #hamburger span{width:22px;height:1.5px;background:var(--ink);display:block;transition:all .3s;}
+  #hamburger.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px);}
+  #hamburger.open span:nth-child(2){opacity:0;}
+  #hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px);}
+
+  /* HERO */
+  section,footer{padding-left:20px;padding-right:20px;}
+  .divider{margin:0 20px;}
+  #hero{padding:80px 20px 50px;}
+  .hero-bg-text{display:none;}
+  h1.hero-name{font-size:clamp(3.2rem,15vw,5rem);}
+  .hero-sub{font-size:.92rem;max-width:100%;}
+  .hero-cta{flex-direction:column;align-items:flex-start;gap:16px;margin-top:32px;}
+  .btn-primary{width:100%;justify-content:center;padding:16px 20px;}
+
+  /* ABOUT */
+  .avatar-box{aspect-ratio:4/3;max-height:280px;}
+  .about-bio{font-size:1.2rem;}
+  .about-stats{grid-template-columns:repeat(3,1fr);}
+  .stat{padding:18px 12px;}
+  .stat-n{font-size:1.8rem;}
+
+  /* PROJECTS */
+  .proj-item{grid-template-columns:1fr;gap:8px;padding:24px 0;}
+  .proj-num{display:none;}
+  .proj-name{font-size:1.4rem;}
+
+  /* EDUCATION */
+  .edu-item{padding:20px 0;}
+  .edu-name{font-size:1.2rem;}
+
+  /* SKILLS */
+  .sg{padding:28px 20px;}
+
+  /* INTERNSHIP */
+  .intern-role{font-size:1.5rem;}
+  .intern-card{padding:28px 20px;}
+
+  /* CERTS */
+  .cert-card{padding:24px 20px;}
+  .cert-title{font-size:1.2rem;}
+
+  /* CONTACT */
+  .contact-grid{gap:40px;}
+  .contact-email{font-size:1rem;}
+  .social-link{font-size:.7rem;padding:12px 0;}
+
+  /* FOOTER */
+  footer{padding:20px;}
+
+  /* THEME BTN */
+  #theme-btn{bottom:14px;right:14px;width:42px;height:42px;}
+
+  /* CURSOR - hide on touch */
+  #cur,#curR{display:none;}
 }
 </style>
 </head>
@@ -342,12 +427,15 @@ footer a:hover{color:var(--accent);}
 <!-- NAV -->
 <nav id="nav">
   <a href="#hero" class="nav-logo">Abhay<span>Unix</span></a>
-  <ul class="nav-links">
-    <li><a href="#about">About</a></li>
-    <li><a href="#education">Education</a></li>
-    <li><a href="#projects">Projects</a></li>
-    <li><a href="#skills">Skills</a></li>
-    <li><a href="#contact">Contact</a></li>
+  <button id="hamburger" aria-label="Menu" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#about" onclick="closeMenu()">About</a></li>
+    <li><a href="#education" onclick="closeMenu()">Education</a></li>
+    <li><a href="#projects" onclick="closeMenu()">Projects</a></li>
+    <li><a href="#skills" onclick="closeMenu()">Skills</a></li>
+    <li><a href="#contact" onclick="closeMenu()">Contact</a></li>
     <span class="nav-badge">Open to work</span>
   </ul>
 </nav>
@@ -362,7 +450,6 @@ footer a:hover{color:var(--accent);}
     <a href="#projects" class="btn-primary">View Work →</a>
     <a href="#contact" class="btn-ghost">Get in touch</a>
   </div>
-  <div class="hero-scroll"><div class="sline"></div><span>Scroll</span></div>
 </section>
 
 <div class="divider"></div>
@@ -544,6 +631,7 @@ footer a:hover{color:var(--accent);}
   <div class="contact-grid">
     <div>
       <p class="contact-intro rv">Have a project in mind or just want to connect? Drop me a message — I reply within 24 hours.</p>
+      <a href="/cdn-cgi/l/email-protection#1776757f766e7c627a7665202127272257707a767e7b3974787a" class="contact-email rv d1"><span class="__cf_email__" data-cfemail="a6c7c4cec7dfcdd3cbc7d49190969693e6c1cbc7cfca88c5c9cb">[email&#160;protected]</span></a>
       <div class="socials-grid rv d2">
         <a href="https://github.com/abhayunix" target="_blank" rel="noopener" class="social-link">GitHub <span>↗</span></a>
         <a href="https://in.linkedin.com/in/abhayunix" target="_blank" rel="noopener" class="social-link">LinkedIn <span>↗</span></a>
@@ -569,7 +657,7 @@ footer a:hover{color:var(--accent);}
   <span>AI & ML Engineer · Open to opportunities</span>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // Cursor
 const cur=document.getElementById('cur'),curR=document.getElementById('curR');
 document.addEventListener('mousemove',e=>{
@@ -602,6 +690,23 @@ const obs=new IntersectionObserver(
   {threshold:0.1}
 );
 document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
+
+// Hamburger menu
+function toggleMenu(){
+  const links=document.getElementById('nav-links');
+  const btn=document.getElementById('hamburger');
+  links.classList.toggle('open');
+  btn.classList.toggle('open');
+}
+function closeMenu(){
+  document.getElementById('nav-links').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+}
+// Close menu on outside click
+document.addEventListener('click',e=>{
+  const nav=document.getElementById('nav');
+  if(!nav.contains(e.target)) closeMenu();
+});
 
 // Contact form send via mailto
 function sendMsg(){
