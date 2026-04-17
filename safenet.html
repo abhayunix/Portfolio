@@ -3,24 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SAFENET — Emergency Response Framework</title>
+  <title>ResQNow — Emergency Response Framework</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-deep:    #04080f;
-      --bg-mid:     #080e1a;
-      --bg-card:    rgba(255,255,255,0.03);
-      --cyan:       #00e5ff;
-      --cyan-dim:   #00b8d9;
-      --red:        #ff3b5c;
-      --amber:      #ffb300;
-      --white:      #f0f4ff;
-      --muted:      #6b7a99;
-      --border:     rgba(0,229,255,0.12);
-      --font-head:  'Rajdhani', sans-serif;
-      --font-body:  'DM Sans', sans-serif;
-      --font-mono:  'Space Mono', monospace;
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-tertiary: #1a1a25;
+      --bg-card: rgba(255,255,255,0.025);
+      --accent-primary: #6366f1;
+      --accent-secondary: #818cf8;
+      --accent-glow: rgba(99,102,241,0.4);
+      --accent-teal: #14b8a6;
+      --danger: #f43f5e;
+      --warning: #f59e0b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-subtle: rgba(255,255,255,0.06);
+      --border-accent: rgba(99,102,241,0.2);
+      --font-display: 'Outfit', sans-serif;
+      --font-body: 'Space Grotesk', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -28,106 +37,108 @@
     html { scroll-behavior: smooth; font-size: 16px; }
 
     body {
-      background: var(--bg-deep);
-      color: var(--white);
+      background: var(--bg-primary);
+      color: var(--text-primary);
       font-family: var(--font-body);
-      font-weight: 300;
+      font-weight: 400;
       line-height: 1.7;
       overflow-x: hidden;
     }
 
-    /* ── SCROLLBAR ── */
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: var(--bg-deep); }
-    ::-webkit-scrollbar-thumb { background: var(--cyan-dim); border-radius: 2px; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+    ::-webkit-scrollbar-thumb { background: var(--accent-primary); border-radius: 3px; }
 
-    /* ── NOISE OVERLAY ── */
-    body::before {
-      content: '';
+    .bg-mesh {
       position: fixed; inset: 0; z-index: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      background: 
+        radial-gradient(ellipse 80% 50% at 20% 40%, rgba(99,102,241,0.08) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 40% at 80% 60%, rgba(20,184,166,0.06) 0%, transparent 50%),
+        radial-gradient(ellipse 100% 80% at 50% 100%, rgba(99,102,241,0.04) 0%, transparent 40%);
+      pointer-events: none;
+    }
+    
+    .bg-grid {
+      position: fixed; inset: 0; z-index: 0;
+      background-image: 
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 50px 50px;
+      mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 30%, transparent 100%);
       pointer-events: none;
     }
 
-    /* ── NAV ── */
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 6vw;
-      height: 64px;
-      background: rgba(4,8,15,0.85);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
+      padding: 0 5vw;
+      height: 72px;
+      background: rgba(10,10,15,0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-subtle);
     }
     .nav-logo {
-      font-family: var(--font-head);
-      font-size: 1.6rem;
+      font-family: var(--font-display);
+      font-size: 1.5rem;
       font-weight: 700;
-      letter-spacing: 0.18em;
-      color: var(--white);
+      letter-spacing: 0.05em;
+      color: var(--text-primary);
     }
-    .nav-logo span { color: var(--cyan); }
-    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-logo span { 
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
     .nav-links a {
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      letter-spacing: 0.1em;
-      color: var(--muted);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-secondary);
       text-decoration: none;
-      text-transform: uppercase;
       transition: color 0.25s;
+      position: relative;
     }
-    .nav-links a:hover { color: var(--cyan); }
+    .nav-links a::after {
+      content: '';
+      position: absolute; bottom: -4px; left: 0; width: 0; height: 2px;
+      background: var(--accent-primary);
+      border-radius: 1px;
+      transition: width 0.3s;
+    }
+    .nav-links a:hover { color: var(--text-primary); }
+    .nav-links a:hover::after { width: 100%; }
     .nav-badge {
       font-family: var(--font-mono);
-      font-size: 0.65rem;
-      letter-spacing: 0.08em;
-      color: var(--cyan);
-      border: 1px solid var(--cyan);
-      padding: 4px 10px;
-      border-radius: 2px;
-      text-transform: uppercase;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      color: var(--accent-secondary);
+      background: rgba(99,102,241,0.1);
+      border: 1px solid var(--border-accent);
+      padding: 6px 14px;
+      border-radius: 20px;
     }
 
-    /* ── HERO ── */
     #hero {
       position: relative;
       min-height: 100vh;
       display: flex; align-items: center;
-      padding: 0 6vw;
+      padding: 0 5vw;
       overflow: hidden;
-    }
-    .hero-grid {
-      position: absolute; inset: 0;
-      background-image:
-        linear-gradient(rgba(0,229,255,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,229,255,0.04) 1px, transparent 1px);
-      background-size: 60px 60px;
-      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
-    }
-    .hero-glow {
-      position: absolute;
-      width: 600px; height: 600px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(0,229,255,0.06) 0%, transparent 70%);
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      animation: pulse-glow 4s ease-in-out infinite;
-    }
-    @keyframes pulse-glow {
-      0%, 100% { transform: translate(-50%,-50%) scale(1); opacity: 0.6; }
-      50% { transform: translate(-50%,-50%) scale(1.1); opacity: 1; }
     }
     .hero-content {
       position: relative; z-index: 1;
-      max-width: 760px;
+      max-width: 800px;
     }
     .hero-tag {
-      display: inline-flex; align-items: center; gap: 8px;
+      display: inline-flex; align-items: center; gap: 10px;
       font-family: var(--font-mono);
-      font-size: 0.68rem;
-      letter-spacing: 0.15em;
-      color: var(--cyan);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      color: var(--accent-teal);
       text-transform: uppercase;
       margin-bottom: 1.5rem;
       opacity: 0;
@@ -135,28 +146,35 @@
     }
     .hero-tag::before {
       content: '';
-      display: inline-block; width: 6px; height: 6px;
-      border-radius: 50%; background: var(--cyan);
-      animation: blink 1.2s infinite;
+      display: inline-block; width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent-teal);
+      box-shadow: 0 0 12px var(--accent-teal);
+      animation: pulse 2s infinite;
     }
-    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+    @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(0.9); } }
 
     h1 {
-      font-family: var(--font-head);
-      font-size: clamp(3.5rem, 9vw, 7.5rem);
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 8vw, 5.5rem);
       font-weight: 700;
-      line-height: 0.92;
-      letter-spacing: 0.02em;
-      text-transform: uppercase;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
       margin-bottom: 1.5rem;
       opacity: 0;
       animation: fade-up 0.8s 0.4s forwards;
     }
-    h1 .accent { color: var(--cyan); display: block; }
+    h1 .accent { 
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: block;
+    }
     .hero-sub {
-      font-size: 1.05rem;
-      color: var(--muted);
-      max-width: 520px;
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      max-width: 560px;
       line-height: 1.8;
       margin-bottom: 2.5rem;
       opacity: 0;
@@ -168,63 +186,77 @@
       animation: fade-up 0.8s 0.8s forwards;
     }
     .btn-primary {
-      font-family: var(--font-head);
-      font-size: 1rem;
+      font-family: var(--font-display);
+      font-size: 0.95rem;
       font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      padding: 14px 32px;
-      background: var(--cyan);
-      color: var(--bg-deep);
+      letter-spacing: 0.02em;
+      padding: 14px 28px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: white;
       border: none; cursor: pointer;
       text-decoration: none;
-      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
-      transition: all 0.2s;
+      border-radius: var(--radius-md);
+      transition: all 0.3s;
+      box-shadow: 0 4px 20px rgba(99,102,241,0.3);
     }
-    .btn-primary:hover { background: #fff; }
+    .btn-primary:hover { 
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(99,102,241,0.4);
+    }
     .btn-outline {
-      font-family: var(--font-head);
-      font-size: 1rem;
+      font-family: var(--font-display);
+      font-size: 0.95rem;
       font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      padding: 14px 32px;
+      letter-spacing: 0.02em;
+      padding: 14px 28px;
       background: transparent;
-      color: var(--cyan);
-      border: 1px solid var(--cyan);
+      color: var(--text-primary);
+      border: 1px solid var(--border-accent);
       cursor: pointer; text-decoration: none;
-      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
-      transition: all 0.2s;
+      border-radius: var(--radius-md);
+      transition: all 0.3s;
     }
-    .btn-outline:hover { background: rgba(0,229,255,0.08); }
+    .btn-outline:hover { 
+      background: rgba(99,102,241,0.1);
+      border-color: var(--accent-primary);
+    }
 
     .hero-right {
-      position: absolute; right: 6vw; top: 50%;
+      position: absolute; right: 5vw; top: 50%;
       transform: translateY(-50%);
       display: flex; flex-direction: column; gap: 1rem;
-      opacity: 0; animation: fade-left 0.8s 1s forwards;
+      opacity: 0;
+      animation: fade-left 0.8s 1s forwards;
     }
     .stat-card {
       background: var(--bg-card);
-      border: 1px solid var(--border);
-      padding: 1.2rem 1.5rem;
-      min-width: 180px;
+      border: 1px solid var(--border-subtle);
+      padding: 1.4rem 1.8rem;
+      min-width: 200px;
+      border-radius: var(--radius-lg);
       backdrop-filter: blur(12px);
+      transition: all 0.3s;
+    }
+    .stat-card:hover {
+      border-color: var(--border-accent);
+      transform: translateX(-4px);
     }
     .stat-num {
-      font-family: var(--font-head);
-      font-size: 2.2rem;
+      font-family: var(--font-display);
+      font-size: 2.4rem;
       font-weight: 700;
-      color: var(--cyan);
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       line-height: 1;
     }
     .stat-label {
       font-family: var(--font-mono);
-      font-size: 0.6rem;
-      letter-spacing: 0.1em;
-      color: var(--muted);
-      text-transform: uppercase;
-      margin-top: 4px;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-top: 6px;
     }
 
     @keyframes fade-up {
@@ -236,50 +268,48 @@
       to   { opacity: 1; transform: translate(0, -50%); }
     }
 
-    /* ── SECTION BASE ── */
     section {
       position: relative; z-index: 1;
-      padding: 100px 6vw;
+      padding: 100px 5vw;
     }
     .section-label {
       font-family: var(--font-mono);
-      font-size: 0.65rem;
-      letter-spacing: 0.2em;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
-      color: var(--cyan);
+      color: var(--accent-primary);
       margin-bottom: 0.5rem;
     }
     h2 {
-      font-family: var(--font-head);
-      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3rem);
       font-weight: 700;
-      line-height: 1.05;
-      letter-spacing: 0.02em;
-      text-transform: uppercase;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
       margin-bottom: 1rem;
     }
     h3 {
-      font-family: var(--font-head);
-      font-size: 1.3rem;
+      font-family: var(--font-display);
+      font-size: 1.25rem;
       font-weight: 600;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
+      letter-spacing: -0.01em;
       margin-bottom: 0.5rem;
     }
     .lead {
-      font-size: 1rem;
-      color: var(--muted);
+      font-size: 1.05rem;
+      color: var(--text-secondary);
       max-width: 600px;
       line-height: 1.8;
     }
     .divider {
-      width: 48px; height: 2px;
-      background: var(--cyan);
+      width: 60px; height: 3px;
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-teal));
+      border-radius: 2px;
       margin: 1.5rem 0;
     }
 
-    /* ── ABOUT ── */
-    #about { background: var(--bg-mid); }
+    #about { background: var(--bg-secondary); }
     .about-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -287,87 +317,86 @@
       margin-top: 4rem;
       align-items: start;
     }
-    .about-text p { color: var(--muted); margin-bottom: 1rem; font-size: 0.95rem; }
+    .about-text p { color: var(--text-secondary); margin-bottom: 1.2rem; font-size: 1rem; line-height: 1.8; }
+    .about-text strong { color: var(--text-primary); font-weight: 500; }
     .principle-list { margin-top: 2rem; }
     .principle-item {
-      display: flex; gap: 1rem; align-items: flex-start;
-      padding: 1rem 0;
-      border-bottom: 1px solid var(--border);
+      display: flex; gap: 1.2rem; align-items: flex-start;
+      padding: 1.2rem 0;
+      border-bottom: 1px solid var(--border-subtle);
     }
     .principle-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(20,184,166,0.1));
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
       font-size: 1.2rem;
       flex-shrink: 0;
-      margin-top: 2px;
     }
     .principle-item h4 {
-      font-family: var(--font-head);
+      font-family: var(--font-display);
       font-size: 1rem;
       font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--white);
+      color: var(--text-primary);
       margin-bottom: 4px;
     }
-    .principle-item p { color: var(--muted); font-size: 0.88rem; margin: 0; }
+    .principle-item p { color: var(--text-muted); font-size: 0.9rem; margin: 0; }
 
     .quote-box {
-      background: var(--bg-card);
-      border-left: 3px solid var(--cyan);
+      background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(20,184,166,0.04));
+      border: 1px solid var(--border-accent);
+      border-radius: var(--radius-lg);
       padding: 2rem;
       margin-top: 2rem;
     }
     .quote-box blockquote {
-      font-family: var(--font-head);
-      font-size: 1.4rem;
-      font-weight: 600;
-      line-height: 1.4;
-      letter-spacing: 0.02em;
-      color: var(--white);
-      text-transform: uppercase;
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 500;
+      line-height: 1.5;
+      color: var(--text-primary);
     }
     .quote-box cite {
       display: block;
       margin-top: 1rem;
       font-family: var(--font-mono);
-      font-size: 0.65rem;
+      font-size: 0.7rem;
       letter-spacing: 0.1em;
-      color: var(--cyan);
+      color: var(--accent-teal);
       text-transform: uppercase;
       font-style: normal;
     }
 
-    /* ── MODES ── */
     #modes {
-      background: var(--bg-deep);
+      background: var(--bg-primary);
     }
     .modes-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 2rem;
+      gap: 1.5rem;
       margin-top: 4rem;
     }
     .mode-card {
       position: relative;
       background: var(--bg-card);
-      border: 1px solid var(--border);
-      padding: 2.5rem;
+      border: 1px solid var(--border-subtle);
+      padding: 2rem;
+      border-radius: var(--radius-xl);
       overflow: hidden;
-      transition: border-color 0.3s, transform 0.3s;
+      transition: all 0.4s;
     }
-    .mode-card:hover { border-color: currentColor; transform: translateY(-4px); }
-    .mode-card.panic { --c: var(--red); }
-    .mode-card.help  { --c: var(--amber); }
+    .mode-card:hover { 
+      border-color: var(--border-accent);
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+    .mode-card.panic { --c: var(--danger); }
+    .mode-card.help  { --c: var(--warning); }
     .mode-card::before {
       content: '';
       position: absolute; top: 0; left: 0; right: 0;
-      height: 3px;
-      background: var(--c);
-    }
-    .mode-card::after {
-      content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--c) 8%, transparent) 0%, transparent 60%);
-      pointer-events: none;
+      height: 4px;
+      background: linear-gradient(90deg, var(--c), transparent);
     }
     .mode-dot {
       display: inline-flex; align-items: center; gap: 8px;
@@ -376,44 +405,45 @@
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--c);
-      margin-bottom: 1.2rem;
+      margin-bottom: 1rem;
     }
     .mode-dot::before {
       content: '';
-      width: 10px; height: 10px; border-radius: 50%;
+      width: 8px; height: 8px; border-radius: 50%;
       background: var(--c);
-      box-shadow: 0 0 10px var(--c);
+      box-shadow: 0 0 12px var(--c);
     }
-    .mode-card h3 { color: var(--white); font-size: 1.6rem; }
-    .mode-card p { color: var(--muted); font-size: 0.9rem; margin-top: 0.5rem; }
+    .mode-card h3 { color: var(--text-primary); font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .mode-card p { color: var(--text-muted); font-size: 0.95rem; margin-top: 0.5rem; }
     .mode-features { list-style: none; margin-top: 1.5rem; }
     .mode-features li {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 0.9rem; color: var(--white);
-      padding: 6px 0;
-      font-family: var(--font-mono);
-      font-size: 0.78rem;
+      display: flex; align-items: center; gap: 10px;
+      font-size: 0.9rem; color: var(--text-secondary);
+      padding: 8px 0;
+      font-family: var(--font-body);
     }
     .mode-features li::before {
       content: '→';
       color: var(--c);
       flex-shrink: 0;
+      font-weight: 600;
     }
 
-    /* ── PROCESS ── */
-    #process { background: var(--bg-mid); }
+    #process { background: var(--bg-secondary); }
     .timeline {
       margin-top: 4rem;
       position: relative;
     }
     .timeline::before {
       content: '';
-      position: absolute; left: 32px; top: 0; bottom: 0;
-      width: 1px; background: var(--border);
+      position: absolute; left: 28px; top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--accent-primary), var(--accent-teal), var(--accent-primary));
+      border-radius: 1px;
     }
     .step {
       display: flex; gap: 2rem;
-      margin-bottom: 3rem;
+      margin-bottom: 2.5rem;
       opacity: 0;
       transform: translateX(-20px);
       transition: opacity 0.5s, transform 0.5s;
@@ -421,30 +451,28 @@
     .step.visible { opacity: 1; transform: translateX(0); }
     .step-num {
       flex-shrink: 0;
-      width: 64px; height: 64px;
-      border: 1px solid var(--border);
+      width: 56px; height: 56px;
+      border: 2px solid var(--border-accent);
       display: flex; align-items: center; justify-content: center;
-      font-family: var(--font-head);
-      font-size: 1.4rem;
+      font-family: var(--font-display);
+      font-size: 1.2rem;
       font-weight: 700;
-      color: var(--cyan);
-      background: var(--bg-deep);
+      color: var(--accent-secondary);
+      background: var(--bg-primary);
+      border-radius: var(--radius-md);
       position: relative; z-index: 1;
     }
-    .step-content { flex: 1; padding-top: 12px; }
+    .step-content { flex: 1; padding-top: 8px; }
     .step-content h4 {
-      font-family: var(--font-head);
-      font-size: 1.2rem;
+      font-family: var(--font-display);
+      font-size: 1.1rem;
       font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--white);
-      margin-bottom: 4px;
+      color: var(--text-primary);
+      margin-bottom: 6px;
     }
-    .step-content p { color: var(--muted); font-size: 0.9rem; }
+    .step-content p { color: var(--text-muted); font-size: 0.95rem; }
 
-    /* ── PRIVACY ── */
-    #privacy { background: var(--bg-deep); }
+    #privacy { background: var(--bg-primary); }
     .privacy-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -453,22 +481,28 @@
     }
     .priv-card {
       background: var(--bg-card);
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-subtle);
       padding: 2rem;
-      transition: border-color 0.3s, background 0.3s;
+      border-radius: var(--radius-lg);
+      transition: all 0.3s;
     }
     .priv-card:hover {
-      border-color: rgba(0,229,255,0.3);
-      background: rgba(0,229,255,0.03);
+      border-color: var(--border-accent);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 32px rgba(0,0,0,0.2);
     }
     .priv-icon {
-      font-size: 1.8rem; margin-bottom: 1rem;
+      width: 48px; height: 48px;
+      background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(20,184,166,0.1));
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
     }
-    .priv-card h3 { font-size: 1rem; margin-bottom: 0.5rem; }
-    .priv-card p { color: var(--muted); font-size: 0.88rem; line-height: 1.7; }
+    .priv-card h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+    .priv-card p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.7; }
 
-    /* ── DATA POLICY ── */
-    #data { background: var(--bg-mid); }
+    #data { background: var(--bg-secondary); }
     .data-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -478,41 +512,46 @@
     }
     .data-table {
       width: 100%;
-      border-collapse: collapse;
-      font-size: 0.88rem;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 0.9rem;
+      border-radius: var(--radius-md);
+      overflow: hidden;
     }
     .data-table th {
       font-family: var(--font-mono);
-      font-size: 0.62rem;
-      letter-spacing: 0.12em;
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--cyan);
-      padding: 10px 16px;
+      color: var(--accent-secondary);
+      padding: 14px 18px;
       text-align: left;
-      background: rgba(0,229,255,0.04);
-      border-bottom: 1px solid var(--border);
+      background: rgba(99,102,241,0.08);
+      border-bottom: 1px solid var(--border-subtle);
     }
     .data-table td {
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--border);
-      color: var(--muted);
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-muted);
     }
-    .data-table td:first-child { color: var(--white); font-weight: 500; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table td:first-child { color: var(--text-primary); font-weight: 500; }
     .tag {
       display: inline-block;
       font-family: var(--font-mono);
-      font-size: 0.62rem;
-      letter-spacing: 0.08em;
+      font-size: 0.6rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
-      padding: 2px 8px;
-      border-radius: 2px;
+      padding: 4px 10px;
+      border-radius: 12px;
       margin: 2px;
     }
-    .tag-no  { background: rgba(255,59,92,0.12); color: var(--red); border: 1px solid rgba(255,59,92,0.2); }
-    .tag-yes { background: rgba(0,229,255,0.1);  color: var(--cyan); border: 1px solid rgba(0,229,255,0.2); }
+    .tag-no  { background: rgba(244,63,94,0.1); color: var(--danger); border: 1px solid rgba(244,63,94,0.2); }
+    .tag-yes { background: rgba(20,184,166,0.1); color: var(--accent-teal); border: 1px solid rgba(20,184,166,0.2); }
 
-    /* ── TRUST ── */
-    #trust { background: var(--bg-deep); }
+    #trust { background: var(--bg-primary); }
     .trust-columns {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -520,10 +559,12 @@
       margin-top: 4rem;
     }
     .trust-block {
-      border-top: 2px solid var(--border);
-      padding-top: 2rem;
+      border-top: 2px solid var(--border-subtle);
+      padding-top: 1.5rem;
+      border-radius: var(--radius-sm);
+      transition: border-color 0.3s;
     }
-    .trust-block.highlight { border-color: var(--cyan); }
+    .trust-block.highlight { border-color: var(--accent-primary); }
     .trust-block h3 { font-size: 1rem; margin-bottom: 1rem; }
     .penalty-item {
       display: flex; align-items: flex-start; gap: 12px;
@@ -532,191 +573,214 @@
     .penalty-badge {
       font-family: var(--font-mono);
       font-size: 0.6rem;
-      letter-spacing: 0.08em;
+      font-weight: 500;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
-      padding: 3px 8px;
+      padding: 4px 10px;
+      border-radius: 12px;
       flex-shrink: 0;
       margin-top: 2px;
     }
-    .pb-warn   { border: 1px solid var(--amber); color: var(--amber); background: rgba(255,179,0,0.06); }
-    .pb-limit  { border: 1px solid #ff7043; color: #ff7043; background: rgba(255,112,67,0.06); }
-    .pb-ban    { border: 1px solid var(--red); color: var(--red); background: rgba(255,59,92,0.06); }
-    .penalty-item p { color: var(--muted); font-size: 0.88rem; }
+    .pb-warn   { border: 1px solid var(--warning); color: var(--warning); background: rgba(245,158,11,0.08); }
+    .pb-limit  { border: 1px solid #ff7043; color: #ff7043; background: rgba(255,112,67,0.08); }
+    .pb-ban    { border: 1px solid var(--danger); color: var(--danger); background: rgba(244,63,94,0.08); }
+    .penalty-item p { color: var(--text-muted); font-size: 0.88rem; }
 
-    /* ── ECOSYSTEM ── */
-    #ecosystem { background: var(--bg-mid); }
+    #ecosystem { background: var(--bg-secondary); }
     .eco-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 2rem;
+      gap: 1.5rem;
       margin-top: 4rem;
     }
     .eco-card {
       background: var(--bg-card);
-      border: 1px solid var(--border);
-      padding: 2rem;
+      border: 1px solid var(--border-subtle);
+      padding: 1.8rem;
+      border-radius: var(--radius-lg);
+      transition: all 0.3s;
+    }
+    .eco-card:hover {
+      border-color: var(--border-accent);
+      transform: translateY(-4px);
     }
     .eco-card .eco-org {
       font-family: var(--font-mono);
-      font-size: 0.62rem;
+      font-size: 0.65rem;
+      font-weight: 500;
       letter-spacing: 0.1em;
-      color: var(--cyan);
+      color: var(--accent-teal);
       text-transform: uppercase;
       margin-bottom: 0.8rem;
     }
     .eco-card h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
-    .eco-card p { color: var(--muted); font-size: 0.88rem; line-height: 1.7; }
+    .eco-card p { color: var(--text-muted); font-size: 0.88rem; line-height: 1.7; }
     .eco-card .role-list {
       margin-top: 1rem;
       list-style: none;
     }
     .eco-card .role-list li {
       font-size: 0.85rem;
-      color: var(--muted);
-      padding: 4px 0;
-      padding-left: 16px;
+      color: var(--text-secondary);
+      padding: 6px 0;
+      padding-left: 14px;
       position: relative;
     }
     .eco-card .role-list li::before {
       content: '•';
       position: absolute; left: 0;
-      color: var(--cyan);
+      color: var(--accent-primary);
     }
 
-    /* ── LIMITATIONS ── */
-    #limitations { background: var(--bg-deep); }
+    #limitations { background: var(--bg-primary); }
     .lim-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 2rem;
+      gap: 1.5rem;
       margin-top: 4rem;
     }
     .lim-item {
       display: flex; gap: 1.5rem; align-items: flex-start;
       background: var(--bg-card);
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-subtle);
       padding: 1.5rem;
+      border-radius: var(--radius-lg);
+      transition: all 0.3s;
+    }
+    .lim-item:hover {
+      border-color: var(--border-accent);
     }
     .lim-num {
-      font-family: var(--font-head);
-      font-size: 2.5rem;
+      font-family: var(--font-display);
+      font-size: 2.2rem;
       font-weight: 700;
-      color: rgba(0,229,255,0.12);
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       line-height: 1;
       flex-shrink: 0;
     }
     .lim-item h4 {
-      font-family: var(--font-head);
+      font-family: var(--font-display);
       font-size: 1rem;
       font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--white);
+      color: var(--text-primary);
       margin-bottom: 4px;
     }
-    .lim-item p { color: var(--muted); font-size: 0.88rem; }
+    .lim-item p { color: var(--text-muted); font-size: 0.9rem; }
 
-    /* ── DISCLAIMER ── */
     #disclaimer {
-      background: var(--bg-mid);
+      background: var(--bg-secondary);
     }
     .disclaimer-box {
       max-width: 860px; margin: 4rem auto 0;
-      background: rgba(255,59,92,0.04);
-      border: 1px solid rgba(255,59,92,0.2);
-      padding: 3rem;
+      background: rgba(244,63,94,0.04);
+      border: 1px solid rgba(244,63,94,0.15);
+      padding: 2.5rem;
+      border-radius: var(--radius-xl);
     }
     .disclaimer-box .dis-label {
       font-family: var(--font-mono);
-      font-size: 0.65rem;
-      letter-spacing: 0.2em;
-      color: var(--red);
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      color: var(--danger);
       text-transform: uppercase;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
     }
-    .disclaimer-box p { color: var(--muted); font-size: 0.95rem; margin-bottom: 1rem; }
+    .disclaimer-box p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 0.8rem; }
     .disclaimer-box p:last-child { margin-bottom: 0; }
-    .disclaimer-box strong { color: var(--white); }
+    .disclaimer-box strong { color: var(--text-primary); font-weight: 500; }
 
-    /* ── FOOTER ── */
     footer {
       position: relative; z-index: 1;
-      padding: 4rem 6vw 2rem;
-      background: var(--bg-deep);
-      border-top: 1px solid var(--border);
+      padding: 4rem 5vw 2rem;
+      background: var(--bg-primary);
+      border-top: 1px solid var(--border-subtle);
     }
     .footer-top {
       display: flex; justify-content: space-between; align-items: flex-start;
       margin-bottom: 3rem;
     }
     .footer-brand {
-      font-family: var(--font-head);
-      font-size: 2rem;
+      font-family: var(--font-display);
+      font-size: 1.8rem;
       font-weight: 700;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
+      letter-spacing: 0.02em;
     }
-    .footer-brand span { color: var(--cyan); }
-    .footer-tagline { color: var(--muted); font-size: 0.85rem; margin-top: 4px; }
+    .footer-brand span { 
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .footer-tagline { color: var(--text-muted); font-size: 0.9rem; margin-top: 6px; }
     .footer-links {
-      display: flex; gap: 3rem;
+      display: flex; gap: 4rem;
     }
     .footer-col h5 {
       font-family: var(--font-mono);
-      font-size: 0.62rem;
-      letter-spacing: 0.15em;
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--cyan);
+      color: var(--accent-secondary);
       margin-bottom: 1rem;
     }
     .footer-col a {
       display: block;
-      color: var(--muted);
+      color: var(--text-muted);
       text-decoration: none;
-      font-size: 0.88rem;
-      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+      margin-bottom: 0.6rem;
       transition: color 0.2s;
     }
-    .footer-col a:hover { color: var(--white); }
+    .footer-col a:hover { color: var(--text-primary); }
     .footer-bottom {
       display: flex; justify-content: space-between; align-items: center;
       padding-top: 2rem;
-      border-top: 1px solid var(--border);
+      border-top: 1px solid var(--border-subtle);
     }
     .footer-bottom p {
       font-family: var(--font-mono);
-      font-size: 0.65rem;
-      letter-spacing: 0.08em;
-      color: var(--muted);
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
     }
     .footer-status {
-      display: flex; align-items: center; gap: 6px;
+      display: flex; align-items: center; gap: 8px;
       font-family: var(--font-mono);
-      font-size: 0.62rem;
-      letter-spacing: 0.1em;
-      color: var(--cyan);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      color: var(--accent-teal);
       text-transform: uppercase;
     }
     .footer-status::before {
       content: '';
-      width: 6px; height: 6px;
-      border-radius: 50%; background: var(--cyan);
-      animation: blink 1.5s infinite;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent-teal);
+      box-shadow: 0 0 10px var(--accent-teal);
+      animation: pulse 2s infinite;
     }
 
-    /* ── RESPONSIVE ── */
-    @media (max-width: 900px) {
+    @media (max-width: 1024px) {
       .about-grid, .modes-grid, .data-grid, .trust-columns, .eco-grid,
       .lim-grid, .privacy-grid { grid-template-columns: 1fr; }
       .hero-right { display: none; }
       .footer-top { flex-direction: column; gap: 2rem; }
       .footer-links { flex-wrap: wrap; gap: 2rem; }
-      nav { padding: 0 4vw; }
+    }
+    @media (max-width: 768px) {
+      nav { padding: 0 4vw; height: 64px; }
       .nav-links { display: none; }
       section { padding: 60px 4vw; }
+      h1 { font-size: clamp(2.2rem, 10vw, 3.5rem); }
+      .hero-cta { flex-direction: column; }
+      .btn-primary, .btn-outline { width: 100%; text-align: center; }
     }
 
-    /* ── REVEAL ANIMATION ── */
     .reveal {
       opacity: 0;
       transform: translateY(30px);
@@ -730,9 +794,11 @@
 </head>
 <body>
 
-<!-- ── NAV ── -->
+<div class="bg-mesh"></div>
+<div class="bg-grid"></div>
+
 <nav>
-  <div class="nav-logo">SAFE<span>NET</span></div>
+  <div class="nav-logo">ResQ<span>Now</span></div>
   <ul class="nav-links">
     <li><a href="#about">Overview</a></li>
     <li><a href="#modes">System</a></li>
@@ -743,10 +809,7 @@
   <div class="nav-badge">Conceptual Framework</div>
 </nav>
 
-<!-- ── HERO ── -->
 <section id="hero">
-  <div class="hero-grid"></div>
-  <div class="hero-glow"></div>
   <div class="hero-content">
     <div class="hero-tag">Emergency Response Framework · v1.0</div>
     <h1>
@@ -755,7 +818,7 @@
       Safety
     </h1>
     <p class="hero-sub">
-      SafeNet is a conceptual emergency response framework designed to close the gap between 
+      ResQNow is a conceptual emergency response framework designed to close the gap between 
       crisis and care — leveraging community proximity, privacy-first architecture, and 
       responsible technology to create faster, safer outcomes.
     </p>
@@ -780,17 +843,16 @@
   </div>
 </section>
 
-<!-- ── ABOUT ── -->
 <section id="about">
   <div class="section-label">01 — Introduction</div>
-  <h2>What Is<br>SafeNet?</h2>
+  <h2>What Is<br>ResQNow?</h2>
   <div class="divider"></div>
   <div class="about-grid">
     <div class="about-text reveal">
       <p>
-        SafeNet is a <strong>conceptual emergency response system</strong> engineered to improve 
+        ResQNow is a <strong>conceptual emergency response system</strong> engineered to improve 
         real-world safety outcomes through intelligent community coordination. Rather than 
-        replacing established emergency services, SafeNet proposes a complementary layer 
+        replacing established emergency services, ResQNow proposes a complementary layer 
         of rapid, proximity-based human response.
       </p>
       <p>
@@ -798,469 +860,368 @@
         <strong>privacy protection</strong>, and <strong>responsible technology use</strong>. 
         Every architectural decision prioritizes the dignity and safety of the individual.
       </p>
-      <p>
-        This is not an active emergency platform. SafeNet represents a <strong>structured model</strong> — 
-        a blueprint for future systems that aspire to be faster, fairer, and more humane 
-        than what currently exists.
-      </p>
-
-      <div class="quote-box">
-        <blockquote>
-          "Timely nearby assistance can often surpass centralized emergency services — 
-          SafeNet is built on this truth."
-        </blockquote>
-        <cite>— SafeNet Core Principle</cite>
-      </div>
-    </div>
-
-    <div class="reveal">
       <div class="principle-list">
         <div class="principle-item">
-          <div class="principle-icon">⚡</div>
+          <div class="principle-icon">🎯</div>
           <div>
-            <h4>Reduce Response Time</h4>
-            <p>Activate the nearest available, verified individuals to reach those in need before traditional services can mobilize.</p>
-          </div>
-        </div>
-        <div class="principle-item">
-          <div class="principle-icon">👥</div>
-          <div>
-            <h4>Community Involvement</h4>
-            <p>Engage the most powerful resource in any emergency — people who are already nearby and willing to help.</p>
+            <h4>Proximity-First</h4>
+            <p>Prioritizing the nearest qualified responders for fastest intervention.</p>
           </div>
         </div>
         <div class="principle-item">
           <div class="principle-icon">🔒</div>
           <div>
-            <h4>Privacy by Default</h4>
-            <p>No continuous monitoring. Location data is accessed solely during active emergency events, then permanently deleted.</p>
+            <h4>Privacy by Design</h4>
+            <p>Zero-knowledge architecture with ephemeral data handling.</p>
           </div>
         </div>
         <div class="principle-item">
-          <div class="principle-icon">🛡️</div>
+          <div class="principle-icon">🤝</div>
           <div>
-            <h4>Misuse Prevention</h4>
-            <p>Multi-layered safeguards ensure the system remains a genuine safety tool — never a vector for false alarms or abuse.</p>
+            <h4>Human-Centered</h4>
+            <p>Technology that augments human response, never replaces judgment.</p>
           </div>
         </div>
       </div>
     </div>
+    <div class="quote-box reveal">
+      <blockquote>
+        "The fastest emergency response is often the one closest to you."
+      </blockquote>
+      <cite>— ResQNow Design Philosophy</cite>
+    </div>
   </div>
 </section>
 
-<!-- ── MODES ── -->
 <section id="modes">
-  <div class="section-label">02 — Core Concept</div>
-  <h2>Dual-Mode<br>Operation</h2>
+  <div class="section-label">02 — System Modes</div>
+  <h2>Response<br>Protocols</h2>
   <div class="divider"></div>
-  <p class="lead">SafeNet operates across two distinct modes, each calibrated for specific circumstances, interaction levels, and risk tolerances.</p>
-  <div class="modes-grid reveal">
-    <div class="mode-card panic">
-      <div class="mode-dot">Panic Mode</div>
-      <h3>Emergency Response</h3>
-      <p>Reserved exclusively for high-risk, life-threatening situations requiring immediate intervention.</p>
+  <div class="modes-grid">
+    <div class="mode-card panic reveal">
+      <div class="mode-dot">Critical Alert</div>
+      <h3>Panic Mode</h3>
+      <p>Immediate dispatch to all nearby verified responders with live location streaming.</p>
       <ul class="mode-features">
-        <li>Single-action activation — no complex inputs</li>
-        <li>Temporary location broadcast to verified nearby users</li>
-        <li>Minimal interface — designed for distress conditions</li>
-        <li>Auto-escalation to authorities if unresolved</li>
-        <li>Trusted contacts notified in parallel</li>
-        <li>Complete data deletion upon resolution</li>
+        <li>Instant push to 500m radius</li>
+        <li>Live GPS tracking for responders</li>
+        <li>Auto-notify emergency services</li>
+        <li>Audio/video evidence capture</li>
       </ul>
     </div>
-    <div class="mode-card help">
-      <div class="mode-dot">Help Mode</div>
-      <h3>Everyday Assistance</h3>
-      <p>Designed for non-urgent needs — a controlled, conversational framework for daily community support.</p>
+    <div class="mode-card help reveal">
+      <div class="mode-dot">Non-Critical</div>
+      <h3>Help Mode</h3>
+      <p>Selective outreach to nearby volunteers for non-emergency assistance.</p>
       <ul class="mode-features">
-        <li>Guided interaction flow with context options</li>
-        <li>Configurable visibility and response radius</li>
-        <li>Built-in misuse deterrence mechanisms</li>
-        <li>Reputation-weighted helper matching</li>
-        <li>User retains full control at every step</li>
-        <li>Session data cleared after each request</li>
+        <li>Targeted 200m radius query</li>
+        <li>No automatic service escalation</li>
+        <li>Anonymous response matching</li>
+        <li>Chat-based coordination</li>
       </ul>
     </div>
   </div>
 </section>
 
-<!-- ── PROCESS ── -->
 <section id="process">
-  <div class="section-label">03 — System Working Process</div>
-  <h2>Step-by-Step<br>Response Flow</h2>
+  <div class="section-label">03 — Workflow</div>
+  <h2>How It<br>Works</h2>
   <div class="divider"></div>
-  <p class="lead">From the moment a user activates SafeNet to full resolution, every step is deliberate, privacy-preserving, and traceable.</p>
   <div class="timeline">
     <div class="step">
       <div class="step-num">01</div>
       <div class="step-content">
-        <h4>User Activates Panic Trigger</h4>
-        <p>The user initiates the emergency signal through a single, deliberate action. No complex navigation required under duress.</p>
+        <h4>Trigger Activation</h4>
+        <p>User activates via app with single-tap panic or voice-activated emergency. System immediately locks location and begins event logging.</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">02</div>
       <div class="step-content">
-        <h4>Temporary Location Access Granted</h4>
-        <p>The system requests time-limited location data — active only for the duration of the emergency event. No passive tracking occurs.</p>
+        <h4>Proximity Matching</h4>
+        <p>Algorithm identifies and notifies the nearest verified responders within the defined radius, ranked by response time and capability.</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">03</div>
       <div class="step-content">
-        <h4>Nearby Verified Users Alerted</h4>
-        <p>Encrypted proximity alerts are dispatched to verified community members within the defined response radius.</p>
+        <h4>Response Coordination</h4>
+        <p>Responders receive secure route guidance and real-time updates. User receives responder ETA and identity confirmation.</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">04</div>
       <div class="step-content">
-        <h4>Responder Accepts the Alert</h4>
-        <p>Willing responders voluntarily confirm their availability. The user is notified of incoming assistance in real time.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">05</div>
-      <div class="step-content">
-        <h4>Trusted Contacts Notified</h4>
-        <p>Pre-designated trusted contacts receive a parallel notification — ensuring a personal support network is always aware.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">06</div>
-      <div class="step-content">
-        <h4>Authority Escalation (If Required)</h4>
-        <p>If the situation exceeds community-level response capacity, the framework escalates to professional emergency services or law enforcement.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">07</div>
-      <div class="step-content">
-        <h4>Resolution & Automatic Data Deletion</h4>
-        <p>Upon confirmed resolution, all event-related data — including location history and communication logs — is permanently and automatically erased.</p>
+        <h4>Event Resolution</h4>
+        <p>Once resolved, all ephemeral data is purged. User confirms closure, and system logs anonymized outcome metrics only.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── PRIVACY ── -->
 <section id="privacy">
-  <div class="section-label">04 — Privacy Architecture</div>
-  <h2>Privacy as<br>Infrastructure</h2>
+  <div class="section-label">04 — Privacy</div>
+  <h2>Privacy<br>Architecture</h2>
   <div class="divider"></div>
-  <p class="lead">SafeNet treats privacy not as a feature checkbox, but as a foundational design principle embedded into every layer of the system.</p>
-  <div class="privacy-grid reveal">
-    <div class="priv-card">
-      <div class="priv-icon">🚫</div>
-      <h3>No Continuous Tracking</h3>
-      <p>Location data is never collected passively. The system operates in a dormant state and activates only upon explicit user consent.</p>
-    </div>
-    <div class="priv-card">
-      <div class="priv-icon">📍</div>
-      <h3>Emergency-Only Location</h3>
-      <p>Geographic data is shared solely during the active window of an emergency event. All access is time-bound and revoked automatically.</p>
-    </div>
-    <div class="priv-card">
-      <div class="priv-icon">🎛️</div>
-      <h3>User-Controlled Activation</h3>
-      <p>Every sensitive feature requires explicit user initiation. The platform will never autonomously activate functions without direct consent.</p>
-    </div>
-    <div class="priv-card">
-      <div class="priv-icon">⏳</div>
-      <h3>Temporary Data Storage</h3>
-      <p>All data is stored in an encrypted, volatile state. Retention is bounded strictly to the duration of the emergency context.</p>
-    </div>
-    <div class="priv-card">
-      <div class="priv-icon">🗑️</div>
-      <h3>Automatic Data Deletion</h3>
-      <p>Upon event resolution, a mandatory and irreversible data purge is triggered — no manual action required from the user.</p>
-    </div>
-    <div class="priv-card">
+  <div class="privacy-grid">
+    <div class="priv-card reveal">
       <div class="priv-icon">🔐</div>
-      <h3>Encrypted Transmission</h3>
-      <p>All communications and data transfers within the SafeNet framework utilize end-to-end encryption standards throughout the lifecycle.</p>
+      <h3>Zero-Knowledge</h3>
+      <p>No central storage of user identity or location history. All matching happens in-memory and is discarded immediately.</p>
+    </div>
+    <div class="priv-card reveal">
+      <div class="priv-icon">⏱️</div>
+      <h3>Ephemeral Data</h3>
+      <p>All event data auto-purges within 24 hours. Location trails exist only during active emergencies and are user-controlled.</p>
+    </div>
+    <div class="priv-card reveal">
+      <div class="priv-icon">👁️</div>
+      <h3>Opt-In Visibility</h3>
+      <p>Users choose their visibility radius. Responders only see what's necessary for the specific event — nothing more.</p>
     </div>
   </div>
 </section>
 
-<!-- ── DATA POLICY ── -->
 <section id="data">
   <div class="section-label">05 — Data Policy</div>
-  <h2>Data Governance<br>& Usage</h2>
+  <h2>What We<br>Collect</h2>
   <div class="divider"></div>
   <div class="data-grid">
-    <div class="reveal">
-      <h3>Storage & Retention</h3>
-      <p style="color:var(--muted);font-size:0.9rem;margin-bottom:1.5rem;">All user data is handled according to strict storage protocols designed to minimise exposure and maximise control.</p>
+    <div class="data-table-wrapper reveal">
       <table class="data-table">
         <thead>
           <tr>
-            <th>Attribute</th>
-            <th>Policy</th>
+            <th>Data Type</th>
+            <th>Collected</th>
+            <th>Retained</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>Storage Location</td>
-            <td>Secure, audited cloud infrastructure</td>
+            <td>Real-time Location</td>
+            <td><span class="tag tag-yes">During Event</span></td>
+            <td><span class="tag tag-no">Never</span></td>
           </tr>
           <tr>
-            <td>Encryption Standard</td>
-            <td>End-to-end encrypted at rest & in transit</td>
+            <td>Device Identifier</td>
+            <td><span class="tag tag-yes">Minimal</span></td>
+            <td><span class="tag tag-no">Never</span></td>
           </tr>
           <tr>
-            <td>Retention Duration</td>
-            <td>Emergency event duration only</td>
+            <td>Response Metrics</td>
+            <td><span class="tag tag-yes">Aggregated</span></td>
+            <td><span class="tag tag-yes">30 Days</span></td>
           </tr>
           <tr>
-            <td>Post-Event Data</td>
-            <td>Permanently and automatically deleted</td>
+            <td>User Profile</td>
+            <td><span class="tag tag-yes">Optional</span></td>
+            <td><span class="tag tag-yes">User-Controlled</span></td>
           </tr>
           <tr>
-            <td>Access Logs</td>
-            <td>Maintained for security auditing only</td>
+            <td>Communication Logs</td>
+            <td><span class="tag tag-no">No</span></td>
+            <td><span class="tag tag-no">N/A</span></td>
           </tr>
         </tbody>
       </table>
     </div>
     <div class="reveal">
-      <h3>Permitted vs. Prohibited Use</h3>
-      <p style="color:var(--muted);font-size:0.9rem;margin-bottom:1.5rem;">Data collected within SafeNet is governed by explicit purpose limitations. The following defines what is and is not allowed.</p>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Purpose</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Dispatching Emergency Alerts</td>
-            <td><span class="tag tag-yes">Permitted</span></td>
-          </tr>
-          <tr>
-            <td>Connecting Nearby Responders</td>
-            <td><span class="tag tag-yes">Permitted</span></td>
-          </tr>
-          <tr>
-            <td>Safety & Misuse Detection</td>
-            <td><span class="tag tag-yes">Permitted</span></td>
-          </tr>
-          <tr>
-            <td>Advertising or Targeting</td>
-            <td><span class="tag tag-no">Prohibited</span></td>
-          </tr>
-          <tr>
-            <td>Third-Party Data Sales</td>
-            <td><span class="tag tag-no">Prohibited</span></td>
-          </tr>
-          <tr>
-            <td>Behavioural Profiling</td>
-            <td><span class="tag tag-no">Prohibited</span></td>
-          </tr>
-        </tbody>
-      </table>
+      <h3>Data Principles</h3>
+      <p style="color: var(--text-muted); margin-bottom: 1rem; margin-top: 0.5rem;">
+        ResQNow operates on a strict <strong style="color: var(--text-primary);">minimum viable data</strong> philosophy. 
+        We collect only what's operationally essential and retain nothing beyond the immediate need.
+      </p>
+      <p style="color: var(--text-muted);">
+        All analytics are anonymized and aggregated. Individual event data is cryptographically 
+        isolated and automatically expired — no exceptions.
+      </p>
     </div>
   </div>
 </section>
 
-<!-- ── TRUST ── -->
 <section id="trust">
-  <div class="section-label">06 — Trust & Safety</div>
-  <h2>Accountability<br>Framework</h2>
+  <div class="section-label">06 — Trust</div>
+  <h2>Trust &<br>Accountability</h2>
   <div class="divider"></div>
-  <div class="trust-columns reveal">
-    <div class="trust-block highlight">
-      <h3>Misuse Prevention</h3>
-      <p style="color:var(--muted);font-size:0.88rem;margin-bottom:1.5rem;">Multi-layered mechanisms actively discourage abuse of the platform's emergency capabilities.</p>
+  <div class="trust-columns">
+    <div class="trust-block reveal">
+      <h3>Responder Standards</h3>
       <div class="penalty-item">
         <span class="penalty-badge pb-warn">Warning</span>
-        <p>First-time violations receive a formal warning and a mandatory educational intervention.</p>
+        <p>Unresponsive to 3+ events without valid reason</p>
       </div>
       <div class="penalty-item">
-        <span class="penalty-badge pb-limit">Restricted</span>
-        <p>Repeated misuse results in temporary suspension of emergency-triggering capabilities.</p>
+        <span class="penalty-badge pb-limit">Suspend</span>
+        <p>Repeated false activations or abuse of system</p>
       </div>
       <div class="penalty-item">
-        <span class="penalty-badge pb-ban">Banned</span>
-        <p>Serious or sustained violations lead to permanent removal from the platform ecosystem.</p>
-      </div>
-    </div>
-    <div class="trust-block">
-      <h3>Reputation System</h3>
-      <p style="color:var(--muted);font-size:0.88rem;margin-bottom:1.5rem;">Each user maintains a dynamic trust score informed by their history of interactions and conduct.</p>
-      <div class="penalty-item">
-        <span class="penalty-badge pb-warn">Reporting</span>
-        <p>Any user can report suspected misuse or abuse through a structured, evidence-based complaint mechanism.</p>
-      </div>
-      <div class="penalty-item">
-        <span class="penalty-badge tag-yes" style="border:1px solid var(--cyan);color:var(--cyan);background:rgba(0,229,255,0.06);font-family:var(--font-mono);font-size:0.6rem;padding:3px 8px;letter-spacing:0.08em;text-transform:uppercase;flex-shrink:0;margin-top:2px;">Verified</span>
-        <p>Proof-based complaint review ensures no user is penalised without substantiated evidence.</p>
-      </div>
-      <div class="penalty-item">
-        <span class="penalty-badge tag-yes" style="border:1px solid var(--cyan);color:var(--cyan);background:rgba(0,229,255,0.06);font-family:var(--font-mono);font-size:0.6rem;padding:3px 8px;letter-spacing:0.08em;text-transform:uppercase;flex-shrink:0;margin-top:2px;">Score</span>
-        <p>Consistent positive behaviour incrementally builds trust level and unlocks additional system capabilities.</p>
+        <span class="penalty-badge pb-ban">Ban</span>
+        <p>Malicious use or violation of trust charter</p>
       </div>
     </div>
-    <div class="trust-block">
-      <h3>Safety Design</h3>
-      <p style="color:var(--muted);font-size:0.88rem;margin-bottom:1.5rem;">Responder safety is not an afterthought — it is embedded into the core interaction design.</p>
+    <div class="trust-block highlight reveal">
+      <h3>User Rights</h3>
       <div class="penalty-item">
-        <div>
-          <p style="margin-bottom:0.75rem;"><strong style="color:var(--white);">No direct risky engagement encouraged.</strong> Responders are never instructed to place themselves in physical danger.</p>
-          <p style="margin-bottom:0.75rem;"><strong style="color:var(--white);">Helper safety prioritised.</strong> Clear guidance is provided on safe observation, de-escalation, and when to step back.</p>
-          <p><strong style="color:var(--white);">Authority escalation for high-risk events.</strong> Complex or dangerous scenarios are handed to professional responders automatically.</p>
-        </div>
+        <span class="penalty-badge pb-warn" style="border-color: var(--accent-teal); color: var(--accent-teal); background: rgba(20,184,166,0.08);">Right</span>
+        <p>Full deletion of profile and history at any time</p>
+      </div>
+      <div class="penalty-item">
+        <span class="penalty-badge pb-warn" style="border-color: var(--accent-teal); color: var(--accent-teal); background: rgba(20,184,166,0.08);">Right</span>
+        <p>Opt-out of all non-essential data collection</p>
+      </div>
+      <div class="penalty-item">
+        <span class="penalty-badge pb-warn" style="border-color: var(--accent-teal); color: var(--accent-teal); background: rgba(20,184,166,0.08);">Right</span>
+        <p>Request audit of all data associated with your identity</p>
+      </div>
+    </div>
+    <div class="trust-block reveal">
+      <h3>System Governance</h3>
+      <div class="penalty-item">
+        <span class="penalty-badge pb-limit">Oversight</span>
+        <p>Independent annual privacy audit required</p>
+      </div>
+      <div class="penalty-item">
+        <span class="penalty-badge pb-limit">Oversight</span>
+        <p>Public disclosure of all algorithm changes</p>
+      </div>
+      <div class="penalty-item">
+        <span class="penalty-badge pb-limit">Oversight</span>
+        <p>Community governance board with user representation</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── ECOSYSTEM ── -->
 <section id="ecosystem">
-  <div class="section-label">07 — Ecosystem & Partnerships</div>
-  <h2>Stakeholder<br>Architecture</h2>
+  <div class="section-label">07 — Ecosystem</div>
+  <h2>Integration<br>Partners</h2>
   <div class="divider"></div>
-  <p class="lead">SafeNet is designed to integrate responsibly with civil society, government services, and community organisations — each with clearly defined roles and data access boundaries.</p>
-  <div class="eco-grid reveal">
-    <div class="eco-card">
-      <div class="eco-org">Civil Society</div>
-      <h3>NGO Integration</h3>
-      <p>Non-governmental organisations play a vital outreach and support role within the SafeNet ecosystem, without requiring access to user data.</p>
+  <div class="eco-grid">
+    <div class="eco-card reveal">
+      <div class="eco-org">Emergency Services</div>
+      <h3>911 / EMS Integration</h3>
+      <p>Automatic escalation to local emergency services with event summary and location data.</p>
       <ul class="role-list">
-        <li>Public awareness and safety education campaigns</li>
-        <li>Victim support and post-incident counselling</li>
-        <li>Community trust-building and outreach</li>
-        <li>No access to private user data without explicit consent</li>
+        <li>Fire departments</li>
+        <li>Ambulance services</li>
+        <li>Police dispatch</li>
       </ul>
     </div>
-    <div class="eco-card">
-      <div class="eco-org">Government</div>
-      <h3>Police & Authority Integration</h3>
-      <p>Law enforcement and government services are notified only in high-risk escalation scenarios — SafeNet augments, not replaces, official response infrastructure.</p>
+    <div class="eco-card reveal">
+      <div class="eco-org">Healthcare</div>
+      <h3>Hospital Networks</h3>
+      <p>Direct patient handoff protocols with relevant medical context and response history.</p>
       <ul class="role-list">
-        <li>Notified automatically in confirmed high-risk events</li>
-        <li>SafeNet does not replace official emergency services</li>
-        <li>Future API integration subject to legal framework</li>
-        <li>Data shared only as required by law and policy</li>
+        <li>ER admissions</li>
+        <li>Trauma centers</li>
+        <li>Urgent care</li>
       </ul>
     </div>
-    <div class="eco-card">
-      <div class="eco-org">Technology</div>
-      <h3>Platform Ethics</h3>
-      <p>The technology layer of SafeNet is governed by a strict ethical operating model that prioritises user dignity, transparent operation, and accountable design.</p>
+    <div class="eco-card reveal">
+      <div class="eco-org">Community</div>
+      <h3>Local Organizations</h3>
+      <p>Partnerships with neighborhood associations, schools, and civic groups for volunteer coordination.</p>
       <ul class="role-list">
-        <li>Open ethical guideline documentation</li>
-        <li>Privacy-by-design architecture</li>
-        <li>Responsible disclosure and incident response</li>
-        <li>Community trust as a core KPI</li>
+        <li>Neighborhood watch</li>
+        <li>Civic volunteers</li>
+        <li>First responder training</li>
       </ul>
     </div>
   </div>
 </section>
 
-<!-- ── LIMITATIONS ── -->
 <section id="limitations">
-  <div class="section-label">08 — Limitations & Considerations</div>
-  <h2>Honest<br>Boundaries</h2>
+  <div class="section-label">08 — Boundaries</div>
+  <h2>System<br>Limitations</h2>
   <div class="divider"></div>
-  <p class="lead">SafeNet is designed with transparency at its core. Understanding the limitations of this framework is as important as understanding its capabilities.</p>
-  <div class="lim-grid reveal">
-    <div class="lim-item">
+  <div class="lim-grid">
+    <div class="lim-item reveal">
       <div class="lim-num">01</div>
       <div>
-        <h4>Internet Dependency</h4>
-        <p>The system requires stable internet connectivity to function. In areas with poor or no network coverage, response capabilities may be compromised.</p>
+        <h4>No Medical Diagnosis</h4>
+        <p>ResQNow facilitates response — it does not provide medical advice or diagnosis. All medical decisions remain with qualified professionals.</p>
       </div>
     </div>
-    <div class="lim-item">
+    <div class="lim-item reveal">
       <div class="lim-num">02</div>
       <div>
-        <h4>User Participation Required</h4>
-        <p>Effective response is contingent on an active, engaged community of verified users. Low adoption in a given area directly reduces system utility.</p>
+        <h4>Geographic Constraints</h4>
+        <p>Response quality depends on responder density. Rural or low-coverage areas may experience delayed response times.</p>
       </div>
     </div>
-    <div class="lim-item">
+    <div class="lim-item reveal">
       <div class="lim-num">03</div>
       <div>
-        <h4>No Guaranteed Response</h4>
-        <p>SafeNet cannot guarantee that a nearby verified responder will always be available or willing to assist in every emergency scenario.</p>
+        <h4>Technology Dependency</h4>
+        <p>Network outages, low battery, or airplane mode will impair functionality. Users should maintain offline backup plans.</p>
       </div>
     </div>
-    <div class="lim-item">
+    <div class="lim-item reveal">
       <div class="lim-num">04</div>
       <div>
-        <h4>Not a Replacement for Emergency Services</h4>
-        <p>This framework is an assistive layer, not a substitute for professional emergency services. It should always be used in conjunction with official resources.</p>
+        <h4>Not a Replacement</h4>
+        <p>ResQNow supplements — never replaces — professional emergency services. Always contact 911 for life-threatening situations.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── DISCLAIMER ── -->
 <section id="disclaimer">
-  <div class="section-label">09 — Legal Disclaimer</div>
-  <h2>Legal &<br>Ethical Notice</h2>
+  <div class="section-label">09 — Legal</div>
+  <h2>Important<br>Disclaimer</h2>
   <div class="divider"></div>
   <div class="disclaimer-box reveal">
-    <div class="dis-label">⚠ Important Notice — Please Read Carefully</div>
+    <div class="dis-label">⚠️ Disclaimer</div>
     <p>
-      <strong>SafeNet is a conceptual emergency response framework.</strong> It is a structured model 
-      proposed for academic, research, and design purposes. It does not constitute an active, 
-      deployed, or commercially available emergency service of any kind.
+      <strong>ResQNow is a conceptual framework only.</strong> This document describes a proposed system 
+      architecture and design philosophy. It does not represent a deployed product, service, or 
+      guaranteed capability.
     </p>
     <p>
-      <strong>SafeNet is not a substitute for official emergency services.</strong> In any real emergency, 
-      users must contact their local emergency services (police, fire, ambulance) as the primary 
-      and authoritative resource. This framework does not guarantee any response, outcome, or intervention.
+      The framework outlined herein is for <strong>informational and design purposes</strong>. No 
+      promises are made regarding functionality, availability, or outcomes. Implementation of any 
+      described features would require significant additional development, regulatory compliance, 
+      and local authorization.
     </p>
     <p>
-      <strong>Users bear full responsibility for their own use</strong> of any system built upon or inspired 
-      by this framework. The creators of the SafeNet concept accept no liability for outcomes 
-      arising from reliance on this model.
-    </p>
-    <p>
-      This framework adheres to core ethical principles of <strong>privacy respect</strong>, 
-      <strong>responsible use</strong>, <strong>misuse prevention</strong>, and 
-      <strong>community trust</strong>. Future implementations must be developed in accordance 
-      with applicable local laws and regulations.
+      <strong>No warranties express or implied.</strong> ResQNow and its creators accept no liability 
+      for any claims, losses, or damages arising from reliance on this framework.
     </p>
   </div>
 </section>
 
-<!-- ── FOOTER ── -->
 <footer>
   <div class="footer-top">
     <div>
-      <div class="footer-brand">SAFE<span>NET</span></div>
-      <div class="footer-tagline">Community Safety · Privacy First · Responsible Technology</div>
+      <div class="footer-brand">ResQ<span>Now</span></div>
+      <div class="footer-tagline">Community-Powered Safety Framework</div>
     </div>
     <div class="footer-links">
       <div class="footer-col">
-        <h5>Framework</h5>
-        <a href="#about">Introduction</a>
-        <a href="#modes">System Modes</a>
-        <a href="#process">Response Flow</a>
-        <a href="#privacy">Privacy Design</a>
+        <h5>Navigation</h5>
+        <a href="#about">Overview</a>
+        <a href="#modes">System</a>
+        <a href="#process">Process</a>
       </div>
       <div class="footer-col">
-        <h5>Governance</h5>
-        <a href="#data">Data Policy</a>
-        <a href="#trust">Accountability</a>
-        <a href="#ecosystem">Ecosystem</a>
-        <a href="#limitations">Limitations</a>
+        <h5>Policy</h5>
+        <a href="#privacy">Privacy</a>
+        <a href="#data">Data</a>
+        <a href="#trust">Trust</a>
       </div>
       <div class="footer-col">
         <h5>Legal</h5>
         <a href="#disclaimer">Disclaimer</a>
+        <a href="#limitations">Limitations</a>
       </div>
     </div>
   </div>
   <div class="footer-bottom">
-    <p>© 2025 SafeNet Conceptual Framework. All rights reserved. Conceptual use only.</p>
-    <div class="footer-status">Conceptual Model Active</div>
+    <p>© 2026 ResQNow Framework. Conceptual Design Only.</p>
+    <div class="footer-status">System Online</div>
   </div>
 </footer>
+
 
 <script>
   // ── Scroll Reveal ──
