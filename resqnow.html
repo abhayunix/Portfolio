@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ResQNow — Emergency Response Framework</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Instrument+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════
+   CSS CUSTOM PROPERTIES
+════════════════════════════════════════ */
+:root{
+  --ink:#09090c;
+  --ink2:#111118;
+  --ink3:#181820;
+  --glass:rgba(255,255,255,.04);
+  --glass2:rgba(255,255,255,.07);
+  --rq:#ff3a3a;
+  --rq2:#ff6b35;
+  --rq-glow:rgba(255,58,58,.18);
+  --gold:#f5c842;
+  --ice:#a8f0ff;
+  --white:#f5f5fa;
+  --muted:#6e7080;
+  --faint:#2a2a35;
+  --bd:rgba(255,255,255,.07);
+  --bd-rq:rgba(255,58,58,.2);
+  --fh:'Syne',sans-serif;
+  --fb:'Instrument Sans',sans-serif;
+  --fm:'Fira Code',monospace;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --r:10px;
+}
+
+/* ════════════════════════════════════════
+   RESET & BASE
+════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  background:var(--ink);
+  color:var(--white);
+  font-family:var(--fb);
+  font-weight:300;
+  line-height:1.7;
+  overflow-x:hidden;
+  cursor:none;
+}
+::selection{background:var(--rq);color:#fff}
+::-webkit-scrollbar{width:2px}
+::-webkit-scrollbar-track{background:var(--ink)}
+::-webkit-scrollbar-thumb{background:var(--rq);border-radius:1px}
+
+/* ════════════════════════════════════════
+   CURSOR
+════════════════════════════════════════ */
+#cur{position:fixed;z-index:9999;pointer-events:none;mix-blend-mode:exclusion}
+#cur .c-dot{width:12px;height:12px;background:var(--white);border-radius:50%;position:absolute;transform:translate(-50%,-50%);transition:transform .15s var(--ease),width .3s,height .3s}
+#cur .c-trail{width:40px;height:40px;border:1px solid rgba(255,255,255,.35);border-radius:50%;position:absolute;transform:translate(-50%,-50%);transition:all .18s var(--ease)}
+body:has(a:hover) #cur .c-dot,body:has(button:hover) #cur .c-dot{transform:translate(-50%,-50%) scale(1.8);background:var(--rq)}
+body:has(a:hover) #cur .c-trail,body:has(button:hover) #cur .c-trail{width:60px;height:60px;border-color:var(--rq-glow)}
+
+/* ════════════════════════════════════════
+   GRAIN OVERLAY
+════════════════════════════════════════ */
+.grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E")
+}
+
+/* ════════════════════════════════════════
+   AMBIENT ORBS
+════════════════════════════════════════ */
+.orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(140px);opacity:.08}
+.orb-1{width:700px;height:700px;background:var(--rq);top:-200px;left:-250px;animation:orb1 20s ease-in-out infinite}
+.orb-2{width:600px;height:600px;background:#ff6b35;bottom:-200px;right:-200px;animation:orb2 25s ease-in-out infinite}
+.orb-3{width:400px;height:400px;background:var(--ice);top:40%;left:50%;transform:translate(-50%,-50%);animation:orb3 18s ease-in-out infinite}
+@keyframes orb1{0%,100%{transform:translate(0,0)}50%{transform:translate(100px,80px)}}
+@keyframes orb2{0%,100%{transform:translate(0,0)}50%{transform:translate(-80px,-100px)}}
+@keyframes orb3{0%,100%{transform:translate(-50%,-50%)}50%{transform:translate(calc(-50% + 60px),calc(-50% + 50px))}}
+
+/* ════════════════════════════════════════
+   PAGE SYSTEM
+════════════════════════════════════════ */
+.page{display:none;position:relative;z-index:2}
+.page.active{display:block}
+
+/* ════════════════════════════════════════
+   NAV
+════════════════════════════════════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 5vw;height:70px;
+  background:rgba(9,9,12,.75);
+  backdrop-filter:blur(24px) saturate(1.5);
+  border-bottom:1px solid var(--bd);
+  transition:background .3s;
+}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;cursor:none}
+.logo-sq{
+  width:34px;height:34px;background:var(--rq);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;flex-shrink:0;
+}
+.logo-sq::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.25),transparent);
+}
+.logo-sq svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2.5;position:relative;z-index:1}
+.logo-name{
+  font-family:var(--fh);font-size:1.15rem;font-weight:800;
+  letter-spacing:.04em;color:var(--white);
+}
+.logo-name span{color:var(--rq)}
+.nav-links{display:flex;gap:4px}
+.nl{
+  font-family:var(--fm);font-size:.6rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);text-decoration:none;
+  padding:6px 14px;border-radius:6px;transition:.2s var(--ease);cursor:none;
+  border:none;background:none;
+}
+.nl:hover,.nl.on{color:var(--white);background:var(--glass2)}
+.nav-chip{
+  font-family:var(--fm);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--rq);border:1px solid var(--bd-rq);padding:6px 16px;
+  border-radius:20px;background:rgba(255,58,58,.06);
+  display:flex;align-items:center;gap:7px;cursor:none;
+}
+.nav-chip::before{
+  content:'';width:6px;height:6px;border-radius:50%;
+  background:var(--rq);box-shadow:0 0 8px var(--rq);
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ════════════════════════════════════════
+   HERO
+════════════════════════════════════════ */
+.hero{
+  min-height:100vh;display:grid;
+  grid-template-columns:1fr 420px;
+  gap:4rem;align-items:center;
+  padding:140px 5vw 100px;
+}
+.hero-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--fm);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--rq);background:rgba(255,58,58,.07);
+  border:1px solid var(--bd-rq);padding:7px 16px;border-radius:20px;
+  margin-bottom:2.2rem;
+  opacity:0;animation:su .8s .1s var(--ease) forwards;
+}
+.hero-tag::before{content:'🚨';font-size:.9rem}
+.hero-h1{
+  font-family:var(--fh);font-size:clamp(3.5rem,7.5vw,7rem);
+  font-weight:800;line-height:.95;letter-spacing:-.03em;
+  margin-bottom:1.8rem;
+  opacity:0;animation:su .9s .25s var(--ease) forwards;
+}
+.hero-h1 .r{color:var(--rq);display:block}
+.hero-h1 .s{
+  display:block;color:transparent;
+  -webkit-text-stroke:1px rgba(255,255,255,.2);
+  font-size:clamp(2.5rem,5.5vw,5rem);font-weight:400;
+  margin-top:.4rem;font-style:italic;
+  font-family:'Instrument Sans',serif;
+}
+.hero-p{
+  font-size:1rem;color:var(--muted);max-width:520px;
+  line-height:1.85;margin-bottom:2.8rem;
+  opacity:0;animation:su .9s .4s var(--ease) forwards;
+}
+.hero-btns{
+  display:flex;gap:1rem;flex-wrap:wrap;
+  opacity:0;animation:su .9s .55s var(--ease) forwards;
+}
+.btn{
+  font-family:var(--fh);font-size:.82rem;font-weight:700;
+  letter-spacing:.06em;text-decoration:none;
+  padding:14px 30px;border-radius:8px;
+  cursor:none;transition:.25s var(--ease);border:none;
+  display:inline-flex;align-items:center;gap:8px;
+  position:relative;overflow:hidden;
+}
+.btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);
+  opacity:0;transition:.25s;
+}
+.btn:hover::before{opacity:1}
+.btn-red{background:var(--rq);color:#fff;box-shadow:0 0 0 rgba(255,58,58,0)}
+.btn-red:hover{box-shadow:0 0 40px rgba(255,58,58,.4);transform:translateY(-2px)}
+.btn-outline{background:transparent;color:var(--white);border:1px solid var(--bd)}
+.btn-outline:hover{background:var(--glass2);border-color:rgba(255,255,255,.15);transform:translateY(-2px)}
+
+/* HERO RIGHT — RADAR CARD */
+.hero-right{
+  opacity:0;animation:fl .9s .7s var(--ease) forwards;
+  display:flex;flex-direction:column;gap:1.5rem;
+}
+.radar-card{
+  background:var(--glass);border:1px solid var(--bd);
+  border-radius:16px;padding:2rem;position:relative;overflow:hidden;
+  backdrop-filter:blur(20px);
+}
+.radar-wrap{
+  width:180px;height:180px;margin:0 auto 1.5rem;
+  position:relative;display:flex;align-items:center;justify-content:center;
+}
+.radar-svg{width:100%;height:100%;position:absolute;top:0;left:0}
+.radar-dot{
+  width:10px;height:10px;background:var(--rq);border-radius:50%;
+  position:relative;z-index:2;
+  box-shadow:0 0 20px var(--rq),0 0 40px rgba(255,58,58,.4);
+}
+.radar-dot::before,.radar-dot::after{
+  content:'';position:absolute;inset:-6px;border-radius:50%;
+  background:rgba(255,58,58,.3);animation:rd 2s ease-out infinite;
+}
+.radar-dot::after{animation-delay:.6s;inset:-14px;background:rgba(255,58,58,.15)}
+@keyframes rd{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(3)}}
+.radar-stat{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:.7rem 0;border-bottom:1px solid var(--bd);
+}
+.radar-stat:last-child{border-bottom:none}
+.rs-label{font-family:var(--fm);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.rs-val{font-family:var(--fh);font-size:.9rem;font-weight:700;color:var(--white)}
+.rs-val.live{color:var(--rq)}
+.mini-cards{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.mini-card{
+  background:var(--glass);border:1px solid var(--bd);
+  border-radius:12px;padding:1.2rem;text-align:center;
+}
+.mc-val{font-family:var(--fh);font-size:1.8rem;font-weight:800;color:var(--rq);line-height:1}
+.mc-lbl{font-family:var(--fm);font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+
+@keyframes su{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fl{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+
+/* ════════════════════════════════════════
+   SECTION SHARED
+════════════════════════════════════════ */
+.sec{padding:110px 5vw;position:relative;z-index:2}
+.sec.alt{background:var(--ink2)}
+.sec.alt2{background:var(--ink3)}
+.s-chip{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--fm);font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--muted);border:1px solid var(--bd);
+  padding:5px 14px;border-radius:20px;margin-bottom:1.2rem;
+}
+.s-chip .n{color:var(--rq);margin-right:2px}
+.s-h2{
+  font-family:var(--fh);font-size:clamp(2rem,4.5vw,3.5rem);
+  font-weight:800;letter-spacing:-.03em;line-height:1.05;
+  margin-bottom:1rem;
+}
+.s-h2 em{font-style:italic;font-family:'Instrument Sans',serif;font-weight:300;color:var(--muted)}
+.s-lead{font-size:.95rem;color:var(--muted);max-width:560px;line-height:1.85}
+.bar{width:36px;height:2px;background:var(--rq);margin:1.5rem 0;border-radius:1px}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.reveal.in{opacity:1;transform:translateY(0)}
+
+/* ════════════════════════════════════════
+   ABOUT — BENTO
+════════════════════════════════════════ */
+.bento{display:grid;grid-template-columns:1.4fr 1fr;grid-template-rows:auto auto;gap:1.5rem;margin-top:3.5rem}
+.bento-main{
+  grid-row:span 2;background:var(--glass);border:1px solid var(--bd);
+  border-radius:16px;padding:2.5rem;
+  transition:.3s var(--ease);
+}
+.bento-main:hover{background:var(--glass2);border-color:rgba(255,255,255,.12)}
+.bento-cell{
+  background:var(--glass);border:1px solid var(--bd);
+  border-radius:16px;padding:2rem;
+  transition:.3s var(--ease);
+  display:flex;flex-direction:column;justify-content:space-between;
+}
+.bento-cell:hover{background:var(--glass2);border-color:rgba(255,255,255,.12)}
+.bento-cell.accent{background:linear-gradient(135deg,rgba(255,58,58,.1),rgba(255,107,53,.06));border-color:var(--bd-rq)}
+.bc-ico{font-size:1.8rem;margin-bottom:1rem}
+.bc-num{font-family:var(--fh);font-size:3rem;font-weight:800;color:var(--rq);line-height:1}
+.bc-label{font-family:var(--fm);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.bc-title{font-family:var(--fh);font-size:1.1rem;font-weight:700;letter-spacing:-.01em;color:var(--white);margin-bottom:.4rem}
+.bc-text{font-size:.87rem;color:var(--muted);line-height:1.75}
+.bento-main h3{font-family:var(--fh);font-size:1.3rem;font-weight:700;letter-spacing:-.02em;margin-bottom:1rem}
+.bento-main p{font-size:.9rem;color:var(--muted);line-height:1.8;margin-bottom:.9rem}
+.bento-main strong{color:var(--white);font-weight:500}
+.quote-strip{
+  margin-top:1.8rem;padding:1.5rem;
+  background:rgba(255,58,58,.06);border-left:2px solid var(--rq);
+  border-radius:0 8px 8px 0;
+}
+.quote-strip q{
+  font-family:'Instrument Sans',serif;font-style:italic;
+  font-size:1.05rem;color:var(--white);line-height:1.6;quotes:none;
+}
+.quote-strip cite{display:block;margin-top:.8rem;font-family:var(--fm);font-size:.56rem;letter-spacing:.12em;text-transform:uppercase;color:var(--rq);font-style:normal}
+
+/* ════════════════════════════════════════
+   MODES
+════════════════════════════════════════ */
+.modes-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:3.5rem}
+.mode-card{
+  border-radius:16px;padding:2.5rem;position:relative;overflow:hidden;
+  border:1px solid var(--bd);
+  transition:.3s var(--ease);
+}
+.mode-card:hover{transform:translateY(-6px)}
+.mode-card.panic{background:linear-gradient(135deg,rgba(255,58,58,.1) 0%,rgba(255,107,53,.06) 50%,transparent 100%);border-color:rgba(255,58,58,.25)}
+.mode-card.help{background:linear-gradient(135deg,rgba(245,200,66,.08) 0%,transparent 60%);border-color:rgba(245,200,66,.2)}
+.mode-glow{position:absolute;width:200px;height:200px;border-radius:50%;filter:blur(80px);opacity:.15;top:-60px;right:-60px;pointer-events:none}
+.panic .mode-glow{background:var(--rq)}
+.help .mode-glow{background:var(--gold)}
+.mode-badge{
+  display:inline-flex;align-items:center;gap:7px;
+  font-family:var(--fm);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;
+  margin-bottom:1.5rem;
+}
+.panic .mode-badge{color:var(--rq)}
+.help .mode-badge{color:var(--gold)}
+.mode-badge::before{content:'';width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.panic .mode-badge::before{background:var(--rq);box-shadow:0 0 12px var(--rq)}
+.help .mode-badge::before{background:var(--gold);box-shadow:0 0 12px var(--gold)}
+.mode-card h3{font-family:var(--fh);font-size:1.6rem;font-weight:800;letter-spacing:-.03em;margin-bottom:.5rem}
+.mode-card > p{font-size:.88rem;color:var(--muted);margin-bottom:1.8rem;line-height:1.75}
+.fl{list-style:none;display:flex;flex-direction:column;gap:.5rem}
+.fl li{
+  display:flex;align-items:flex-start;gap:10px;
+  font-family:var(--fm);font-size:.7rem;color:var(--muted);
+  padding:.5rem .75rem;border-radius:6px;
+  background:rgba(255,255,255,.03);
+  transition:.2s;
+}
+.fl li:hover{background:rgba(255,255,255,.06);color:var(--white)}
+.fl li::before{content:'→';flex-shrink:0;margin-top:1px}
+.panic .fl li::before{color:var(--rq)}
+.help .fl li::before{color:var(--gold)}
+
+/* ════════════════════════════════════════
+   TIMELINE
+════════════════════════════════════════ */
+.timeline{position:relative;margin-top:4rem}
+.timeline::before{
+  content:'';position:absolute;left:28px;top:0;bottom:0;
+  width:1px;background:linear-gradient(to bottom,transparent,var(--faint) 10%,var(--faint) 90%,transparent);
+}
+.tstep{
+  display:grid;grid-template-columns:56px 1fr;gap:2rem;
+  padding:2rem 0;border-bottom:1px solid rgba(255,255,255,.04);
+  opacity:0;transform:translateX(-20px);transition:opacity .6s var(--ease),transform .6s var(--ease);
+}
+.tstep.in{opacity:1;transform:translateX(0)}
+.tstep-num{
+  width:56px;height:56px;border-radius:50%;
+  background:var(--ink);border:1px solid var(--faint);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--fm);font-size:.65rem;color:var(--rq);
+  position:relative;z-index:1;flex-shrink:0;
+  transition:.3s var(--ease);
+}
+.tstep:hover .tstep-num{background:var(--rq-glow);border-color:var(--rq)}
+.tstep-body{padding-top:.6rem}
+.tstep-body h4{
+  font-family:var(--fh);font-size:1.05rem;font-weight:700;
+  letter-spacing:-.01em;color:var(--white);margin-bottom:.35rem;
+}
+.tstep-body p{font-size:.88rem;color:var(--muted);line-height:1.75}
+
+/* ════════════════════════════════════════
+   PRIVACY GRID
+════════════════════════════════════════ */
+.priv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3.5rem}
+.pcard{
+  background:var(--glass);border:1px solid var(--bd);
+  border-radius:14px;padding:2rem;
+  transition:.3s var(--ease);position:relative;overflow:hidden;
+}
+.pcard::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,58,58,.4),transparent);
+  opacity:0;transition:.3s;
+}
+.pcard:hover{background:var(--glass2);transform:translateY(-3px)}
+.pcard:hover::before{opacity:1}
+.pcard .ico{font-size:1.6rem;margin-bottom:1.1rem}
+.pcard h3{font-family:var(--fh);font-size:.95rem;font-weight:700;letter-spacing:-.01em;margin-bottom:.4rem}
+.pcard p{font-size:.83rem;color:var(--muted);line-height:1.7}
+
+/* ════════════════════════════════════════
+   DATA TABLES
+════════════════════════════════════════ */
+.data-split{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;margin-top:3.5rem}
+.tbl-head{font-family:var(--fh);font-size:.9rem;font-weight:700;letter-spacing:-.01em;color:var(--white);margin-bottom:1rem}
+.tbl-wrap{border:1px solid var(--bd);border-radius:12px;overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:.83rem}
+th{font-family:var(--fm);font-size:.55rem;letter-spacing:.14em;text-transform:uppercase;color:var(--rq);padding:11px 14px;text-align:left;background:rgba(255,58,58,.04);border-bottom:1px solid var(--bd)}
+td{padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--muted)}
+td:first-child{color:var(--white);font-weight:400}
+tr:last-child td{border-bottom:none}
+.tag{display:inline-flex;align-items:center;gap:4px;font-family:var(--fm);font-size:.52rem;letter-spacing:.07em;text-transform:uppercase;padding:3px 9px;border-radius:4px}
+.ty{background:rgba(79,255,130,.08);color:#4fff82;border:1px solid rgba(79,255,130,.2)}
+.tn{background:rgba(255,58,58,.08);color:var(--rq);border:1px solid var(--bd-rq)}
+
+/* ════════════════════════════════════════
+   TRUST
+════════════════════════════════════════ */
+.trust-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-top:3.5rem}
+.tcol{border-top:1.5px solid var(--bd);padding-top:2rem;transition:.3s}
+.tcol:hover{border-color:var(--rq)}
+.tcol h3{font-family:var(--fh);font-size:.95rem;font-weight:700;letter-spacing:-.01em;margin-bottom:1.2rem;text-transform:uppercase}
+.pen{display:flex;align-items:flex-start;gap:10px;margin-bottom:1rem}
+.pbadge{font-family:var(--fm);font-size:.52rem;letter-spacing:.07em;text-transform:uppercase;padding:3px 9px;border-radius:4px;flex-shrink:0;margin-top:2px}
+.pw{background:rgba(245,200,66,.07);color:var(--gold);border:1px solid rgba(245,200,66,.2)}
+.pr{background:rgba(255,107,53,.07);color:#ff6b35;border:1px solid rgba(255,107,53,.2)}
+.pb{background:rgba(255,58,58,.07);color:var(--rq);border:1px solid var(--bd-rq)}
+.pg{background:rgba(79,255,130,.07);color:#4fff82;border:1px solid rgba(79,255,130,.2)}
+.pen p{font-size:.84rem;color:var(--muted)}
+
+/* ════════════════════════════════════════
+   ECOSYSTEM
+════════════════════════════════════════ */
+.eco-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3.5rem}
+.eco-card{
+  background:var(--glass);border:1px solid var(--bd);
+  border-radius:14px;padding:2rem;transition:.3s var(--ease);
+}
+.eco-card:hover{background:var(--glass2);transform:translateY(-3px)}
+.eco-org{font-family:var(--fm);font-size:.55rem;letter-spacing:.16em;text-transform:uppercase;color:var(--rq);margin-bottom:.8rem}
+.eco-card h3{font-family:var(--fh);font-size:1.05rem;font-weight:700;letter-spacing:-.01em;margin-bottom:.5rem}
+.eco-card>p{font-size:.84rem;color:var(--muted);line-height:1.75;margin-bottom:1rem}
+.eco-card ul{list-style:none}
+.eco-card ul li{font-size:.82rem;color:var(--muted);padding:3px 0 3px 14px;position:relative}
+.eco-card ul li::before{content:'·';position:absolute;left:0;color:var(--rq)}
+
+/* ════════════════════════════════════════
+   LIMITATIONS
+════════════════════════════════════════ */
+.lim-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;margin-top:3.5rem}
+.lcard{
+  display:flex;gap:1.5rem;background:var(--glass);border:1px solid var(--bd);
+  border-radius:14px;padding:2rem;transition:.3s var(--ease);align-items:flex-start;
+}
+.lcard:hover{background:var(--glass2)}
+.lnum{font-family:var(--fh);font-size:3.5rem;font-weight:800;color:rgba(255,58,58,.12);line-height:1;flex-shrink:0;letter-spacing:-.04em}
+.lcard h4{font-family:var(--fh);font-size:.95rem;font-weight:700;letter-spacing:-.01em;text-transform:uppercase;margin-bottom:.3rem}
+.lcard p{font-size:.84rem;color:var(--muted)}
+
+/* ════════════════════════════════════════
+   DISCLAIMER
+════════════════════════════════════════ */
+.dis-box{
+  background:rgba(255,58,58,.04);border:1px solid rgba(255,58,58,.15);
+  border-radius:16px;padding:3rem;max-width:900px;margin:3rem auto 0;
+}
+.dis-label{font-family:var(--fm);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--rq);display:flex;align-items:center;gap:8px;margin-bottom:1.5rem}
+.dis-box p{font-size:.9rem;color:var(--muted);line-height:1.85;margin-bottom:1rem}
+.dis-box p:last-child{margin-bottom:0}
+.dis-box strong{color:var(--white);font-weight:500}
+
+/* ════════════════════════════════════════
+   FOOTER
+════════════════════════════════════════ */
+footer{position:relative;z-index:2;background:var(--ink2);border-top:1px solid var(--bd);padding:5rem 5vw 2.5rem}
+.footer-inner{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:4rem;margin-bottom:4rem}
+.fb-brand{font-family:var(--fh);font-size:1.5rem;font-weight:800;letter-spacing:-.02em;margin-bottom:.5rem}
+.fb-brand span{color:var(--rq)}
+.fb-sub{font-size:.84rem;color:var(--muted);line-height:1.7;max-width:240px;margin-top:.5rem}
+.fc h5{font-family:var(--fm);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;color:var(--rq);margin-bottom:1.2rem}
+.fc a,.fc button{
+  display:block;font-size:.84rem;font-family:var(--fb);
+  color:var(--muted);text-decoration:none;margin-bottom:.6rem;
+  background:none;border:none;cursor:none;text-align:left;
+  padding:0;transition:.2s var(--ease);
+}
+.fc a:hover,.fc button:hover{color:var(--white)}
+.footer-bot{display:flex;justify-content:space-between;align-items:center;padding-top:2rem;border-top:1px solid var(--bd)}
+.footer-bot p{font-family:var(--fm);font-size:.55rem;letter-spacing:.08em;color:var(--faint)}
+.fstatus{display:flex;align-items:center;gap:7px;font-family:var(--fm);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--rq)}
+.fstatus::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--rq);box-shadow:0 0 8px var(--rq);animation:pulse 2s infinite}
+
+/* ════════════════════════════════════════
+   DOC PAGES
+════════════════════════════════════════ */
+.doc-wrap{position:relative;z-index:2}
+.doc-top{padding:130px 5vw 60px;border-bottom:1px solid var(--bd);background:var(--ink2)}
+.back-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--fm);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);background:none;border:none;cursor:none;
+  padding:0;margin-bottom:2.5rem;transition:.2s;
+}
+.back-btn:hover{color:var(--rq)}
+.back-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+.doc-chip{
+  display:inline-block;font-family:var(--fm);font-size:.56rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--rq);
+  background:rgba(255,58,58,.07);border:1px solid var(--bd-rq);
+  padding:5px 14px;border-radius:20px;margin-bottom:1.5rem;
+}
+.doc-h1{
+  font-family:var(--fh);font-size:clamp(2.2rem,5vw,4rem);
+  font-weight:800;letter-spacing:-.03em;line-height:1.05;margin-bottom:1rem;
+}
+.doc-meta{font-family:var(--fm);font-size:.58rem;letter-spacing:.1em;color:var(--muted)}
+.doc-body{padding:60px 5vw 80px;max-width:900px}
+.doc-toc{
+  background:var(--glass);border:1px solid var(--bd);
+  border-radius:12px;padding:1.5rem 2rem;margin-bottom:3rem;
+}
+.doc-toc h4{font-family:var(--fm);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--rq);margin-bottom:1rem}
+.doc-toc ol{padding-left:1.2rem}
+.doc-toc li{font-size:.85rem;color:var(--muted);line-height:2.1;cursor:none;transition:.2s}
+.doc-toc li:hover{color:var(--white)}
+.dsec{margin-bottom:3.5rem}
+.dsec h2{
+  font-family:var(--fh);font-size:1.35rem;font-weight:700;
+  letter-spacing:-.02em;color:var(--white);
+  margin-bottom:1rem;padding-bottom:.75rem;
+  border-bottom:1px solid var(--bd);
+}
+.dsec h3{
+  font-family:var(--fm);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--rq);margin:1.5rem 0 .5rem;
+}
+.dsec p{font-size:.9rem;color:var(--muted);line-height:1.85;margin-bottom:.9rem}
+.dsec ul,.dsec ol{padding-left:1.2rem;margin-bottom:1rem}
+.dsec li{font-size:.9rem;color:var(--muted);line-height:1.8;margin-bottom:.3rem}
+.dsec li::marker{color:var(--rq)}
+.dsec strong{color:var(--white);font-weight:500}
+.ibox{background:rgba(79,255,130,.04);border-left:2px solid #4fff82;border-radius:0 8px 8px 0;padding:1.2rem 1.5rem;margin:1.5rem 0}
+.cbox{background:rgba(245,200,66,.04);border-left:2px solid var(--gold);border-radius:0 8px 8px 0;padding:1.2rem 1.5rem;margin:1.5rem 0}
+.dbox{background:rgba(255,58,58,.04);border-left:2px solid var(--rq);border-radius:0 8px 8px 0;padding:1.2rem 1.5rem;margin:1.5rem 0}
+.ibox p,.cbox p,.dbox p{color:var(--white);font-size:.88rem;margin:0}
+
+/* ════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════ */
+@media(max-width:960px){
+  .hero{grid-template-columns:1fr}
+  .hero-right{display:none}
+  .bento{grid-template-columns:1fr}
+  .bento-main{grid-row:auto}
+  .modes-grid,.priv-grid,.trust-grid,.eco-grid,.lim-grid,.data-split,.footer-inner{grid-template-columns:1fr}
+  .nav-links{display:none}
+}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="orbs"><span class="orb orb-1"></span><span class="orb orb-2"></span><span class="orb orb-3"></span></div>
+<div id="cur"><div class="c-dot"></div><div class="c-trail"></div></div>
+
+<!-- ════ NAV ════ -->
+<nav id="nav">
+  <a class="nav-logo" href="#" onclick="goHome()">
+    <div class="logo-sq">
+      <svg viewBox="0 0 24 24"><path d="M12 2L4.5 6.5v5c0 4.5 3.2 8.7 7.5 9.5 4.3-.8 7.5-5 7.5-9.5v-5L12 2z"/></svg>
+    </div>
+    <span class="logo-name">ResQ<span>Now</span></span>
+  </a>
+  <div class="nav-links">
+    <button class="nl" onclick="scrollTo('about')">Overview</button>
+    <button class="nl" onclick="scrollTo('modes')">System</button>
+    <button class="nl" onclick="scrollTo('process')">Process</button>
+    <button class="nl" onclick="scrollTo('privacy')">Privacy</button>
+    <button class="nl" onclick="scrollTo('ecosystem')">Ecosystem</button>
+    <button class="nl" onclick="show('doc-privacy')">Docs</button>
+  </div>
+  <div class="nav-chip">Framework v1.0</div>
+</nav>
+
+<!-- ════════════════════════════════════════════
+     HOME
+════════════════════════════════════════════ -->
+<div id="page-home" class="page active">
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div>
+    <div class="hero-tag">Community Emergency Response · ABHAYUNIX</div>
+    <h1 class="hero-h1">
+      <span class="r">ResQNow.</span>
+      <span class="s">Safety, Reimagined.</span>
+    </h1>
+    <p class="hero-p">A privacy-first emergency response framework that bridges the gap between crisis and care — through intelligent community coordination, verified responders, and responsible AI design.</p>
+    <div class="hero-btns">
+      <button class="btn btn-red" onclick="scrollTo('about')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        Explore Framework
+      </button>
+      <button class="btn btn-outline" onclick="show('doc-privacy')">Read Documentation</button>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="radar-card">
+      <div class="radar-wrap">
+        <svg class="radar-svg" viewBox="0 0 180 180">
+          <circle cx="90" cy="90" r="80" fill="none" stroke="rgba(255,58,58,.08)" stroke-width="1"/>
+          <circle cx="90" cy="90" r="55" fill="none" stroke="rgba(255,58,58,.1)" stroke-width="1"/>
+          <circle cx="90" cy="90" r="30" fill="none" stroke="rgba(255,58,58,.14)" stroke-width="1"/>
+          <line x1="90" y1="10" x2="90" y2="170" stroke="rgba(255,58,58,.06)" stroke-width="1"/>
+          <line x1="10" y1="90" x2="170" y2="90" stroke="rgba(255,58,58,.06)" stroke-width="1"/>
+          <path d="M90 90 L90 10" stroke="rgba(255,58,58,.5)" stroke-width="1.5" stroke-linecap="round">
+            <animateTransform attributeName="transform" type="rotate" from="0 90 90" to="360 90 90" dur="3s" repeatCount="indefinite"/>
+          </path>
+          <circle cx="120" cy="60" r="3" fill="rgba(255,58,58,.6)"><animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite" begin="0.5s"/></circle>
+          <circle cx="60" cy="130" r="2.5" fill="rgba(255,58,58,.5)"><animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite" begin="1.2s"/></circle>
+        </svg>
+        <div class="radar-dot"></div>
+      </div>
+      <div class="radar-stat"><span class="rs-label">Status</span><span class="rs-val live">● Active</span></div>
+      <div class="radar-stat"><span class="rs-label">Response Mode</span><span class="rs-val">Community</span></div>
+      <div class="radar-stat"><span class="rs-label">Data Retained</span><span class="rs-val">0 bytes</span></div>
+    </div>
+    <div class="mini-cards">
+      <div class="mini-card"><div class="mc-val">7x</div><div class="mc-lbl">Faster Response</div></div>
+      <div class="mini-card"><div class="mc-val">0ms</div><div class="mc-lbl">Post-Event Data</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="sec alt" id="about">
+  <div class="s-chip"><span class="n">01</span> Introduction</div>
+  <h2 class="s-h2">What Is <em>ResQNow?</em></h2>
+  <div class="bar"></div>
+  <div class="bento reveal">
+    <div class="bento-main">
+      <h3>A Framework Built for Human Safety</h3>
+      <p>ResQNow is a <strong>conceptual emergency response system</strong> engineered to improve real-world safety through intelligent community coordination. Rather than replacing established emergency services, ResQNow proposes a faster, complementary layer of proximity-based human response.</p>
+      <p>The framework balances three critical imperatives: <strong>community-based response</strong>, <strong>privacy protection</strong>, and <strong>responsible technology use</strong>. Every architectural decision prioritises the dignity and safety of the individual above all else.</p>
+      <p>This is not an active emergency platform. ResQNow represents a <strong>structured blueprint</strong> — a reference model for future systems that aspire to be faster, fairer, and more humane than current infrastructure allows.</p>
+      <div class="quote-strip">
+        <q>Timely nearby assistance can often surpass centralised emergency services — ResQNow is built on this foundational truth.</q>
+        <cite>— ResQNow Core Principle</cite>
+      </div>
+    </div>
+    <div class="bento-cell accent">
+      <div class="bc-ico">⚡</div>
+      <div>
+        <div class="bc-title">Reduce Response Time</div>
+        <div class="bc-text">Activate the nearest verified individuals before traditional services can mobilise.</div>
+      </div>
+    </div>
+    <div class="bento-cell">
+      <div><div class="bc-num">100%</div><div class="bc-label">User-Consent Driven</div></div>
+      <div class="bc-text" style="margin-top:.8rem">Every sensitive feature requires explicit initiation. No autonomous activation without consent.</div>
+    </div>
+    <div class="bento-cell">
+      <div class="bc-ico">🔒</div>
+      <div>
+        <div class="bc-title">Privacy by Default</div>
+        <div class="bc-text">No continuous monitoring. Location accessed solely during active events, then auto-deleted.</div>
+      </div>
+    </div>
+    <div class="bento-cell accent">
+      <div><div class="bc-num">0</div><div class="bc-label">Data Retained Post-Event</div></div>
+      <div class="bc-text" style="margin-top:.8rem">Mandatory, irreversible data purge triggered on event resolution automatically.</div>
+    </div>
+  </div>
+</section>
+
+<!-- MODES -->
+<section class="sec" id="modes">
+  <div class="s-chip"><span class="n">02</span> Core Concept</div>
+  <h2 class="s-h2">Dual-Mode <em>Operation</em></h2>
+  <div class="bar"></div>
+  <p class="s-lead">Two distinct modes, each calibrated for specific circumstances, interaction levels, and risk tolerances.</p>
+  <div class="modes-grid reveal">
+    <div class="mode-card panic">
+      <div class="mode-glow"></div>
+      <div class="mode-badge">🔴 Panic Mode</div>
+      <h3>Emergency Response</h3>
+      <p>Reserved exclusively for high-risk, life-threatening situations requiring immediate, minimal-friction intervention.</p>
+      <ul class="fl">
+        <li>Single-action activation — no complex inputs required</li>
+        <li>Temporary location broadcast to verified nearby users</li>
+        <li>Minimal interface — optimised for distress conditions</li>
+        <li>Auto-escalation to authorities if unresolved</li>
+        <li>Trusted contacts notified in parallel</li>
+        <li>Complete data deletion upon resolution</li>
+      </ul>
+    </div>
+    <div class="mode-card help">
+      <div class="mode-glow"></div>
+      <div class="mode-badge">🟡 Help Mode</div>
+      <h3>Everyday Assistance</h3>
+      <p>Designed for non-urgent needs — a controlled, guided framework for daily community support requests.</p>
+      <ul class="fl">
+        <li>Guided interaction flow with contextual options</li>
+        <li>Configurable visibility and response radius</li>
+        <li>Built-in misuse deterrence mechanisms</li>
+        <li>Reputation-weighted helper matching algorithm</li>
+        <li>User retains full control at every step</li>
+        <li>Session data cleared after each request completes</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="sec alt" id="process">
+  <div class="s-chip"><span class="n">03</span> Working Process</div>
+  <h2 class="s-h2">Step-by-Step <em>Response Flow</em></h2>
+  <div class="bar"></div>
+  <p class="s-lead">From trigger to resolution — every step is deliberate, privacy-preserving, and auditable.</p>
+  <div class="timeline">
+    <div class="tstep"><div class="tstep-num">01</div><div class="tstep-body"><h4>User Activates Panic Trigger</h4><p>Single, deliberate action initiates the emergency signal. No complex navigation required under duress conditions.</p></div></div>
+    <div class="tstep"><div class="tstep-num">02</div><div class="tstep-body"><h4>Temporary Location Access Granted</h4><p>Time-limited location data requested — active only for the emergency window. Zero passive or background tracking.</p></div></div>
+    <div class="tstep"><div class="tstep-num">03</div><div class="tstep-body"><h4>Nearby Verified Users Alerted</h4><p>Encrypted proximity alerts dispatched to verified community members within the defined response radius.</p></div></div>
+    <div class="tstep"><div class="tstep-num">04</div><div class="tstep-body"><h4>Responder Accepts the Alert</h4><p>Willing responders voluntarily confirm their availability. User notified of incoming assistance in real time.</p></div></div>
+    <div class="tstep"><div class="tstep-num">05</div><div class="tstep-body"><h4>Trusted Contacts Notified</h4><p>Pre-designated contacts receive a parallel notification — ensuring personal support network is always aware.</p></div></div>
+    <div class="tstep"><div class="tstep-num">06</div><div class="tstep-body"><h4>Authority Escalation (If Required)</h4><p>Situations exceeding community-level capacity auto-escalate to professional emergency services or law enforcement.</p></div></div>
+    <div class="tstep"><div class="tstep-num">07</div><div class="tstep-body"><h4>Resolution & Automatic Data Deletion</h4><p>Upon confirmed resolution, all event data — location history, communication logs — permanently and irreversibly erased.</p></div></div>
+  </div>
+</section>
+
+<!-- PRIVACY -->
+<section class="sec" id="privacy">
+  <div class="s-chip"><span class="n">04</span> Privacy Architecture</div>
+  <h2 class="s-h2">Privacy as <em>Infrastructure</em></h2>
+  <div class="bar"></div>
+  <p class="s-lead">Not a feature checkbox — a foundational design principle embedded into every layer of ResQNow's architecture.</p>
+  <div class="priv-grid reveal">
+    <div class="pcard"><div class="ico">🚫</div><h3>No Continuous Tracking</h3><p>Location never collected passively. System remains dormant, activating only upon explicit user consent and deliberate action.</p></div>
+    <div class="pcard"><div class="ico">📍</div><h3>Emergency-Only Location</h3><p>Geographic data shared solely during an active emergency window. Access is time-bound and auto-revoked on resolution.</p></div>
+    <div class="pcard"><div class="ico">🎛️</div><h3>User-Controlled Activation</h3><p>Every sensitive feature requires explicit user initiation. No autonomous activation without direct, informed consent.</p></div>
+    <div class="pcard"><div class="ico">⏳</div><h3>Temporary Data Storage</h3><p>All data stored encrypted, bounded strictly to the duration of the emergency context. No long-term retention of any kind.</p></div>
+    <div class="pcard"><div class="ico">🗑️</div><h3>Automatic Data Deletion</h3><p>Mandatory, irreversible purge triggered on event resolution — no manual action required from the user.</p></div>
+    <div class="pcard"><div class="ico">🔐</div><h3>End-to-End Encryption</h3><p>All communications and data transfers use end-to-end encryption standards throughout the full lifecycle of every event.</p></div>
+  </div>
+</section>
+
+<!-- DATA -->
+<section class="sec alt" id="data">
+  <div class="s-chip"><span class="n">05</span> Data Policy</div>
+  <h2 class="s-h2">Data Governance <em>& Usage</em></h2>
+  <div class="bar"></div>
+  <div class="data-split reveal">
+    <div>
+      <div class="tbl-head">Storage & Retention</div>
+      <div class="tbl-wrap"><table><thead><tr><th>Attribute</th><th>Policy</th></tr></thead><tbody>
+        <tr><td>Storage Location</td><td>Secure, audited cloud infrastructure</td></tr>
+        <tr><td>Encryption</td><td>E2E encrypted at rest & in transit</td></tr>
+        <tr><td>Retention Period</td><td>Emergency event duration only</td></tr>
+        <tr><td>Post-Event Data</td><td>Permanently auto-deleted</td></tr>
+        <tr><td>Audit Logs</td><td>Security monitoring only (90 days)</td></tr>
+      </tbody></table></div>
+    </div>
+    <div>
+      <div class="tbl-head">Permitted vs. Prohibited</div>
+      <div class="tbl-wrap"><table><thead><tr><th>Purpose</th><th>Status</th></tr></thead><tbody>
+        <tr><td>Emergency Alert Dispatch</td><td><span class="tag ty">✓ Permitted</span></td></tr>
+        <tr><td>Nearby Responder Connect</td><td><span class="tag ty">✓ Permitted</span></td></tr>
+        <tr><td>Safety & Misuse Detection</td><td><span class="tag ty">✓ Permitted</span></td></tr>
+        <tr><td>Advertising / Targeting</td><td><span class="tag tn">✕ Prohibited</span></td></tr>
+        <tr><td>Third-Party Data Sales</td><td><span class="tag tn">✕ Prohibited</span></td></tr>
+        <tr><td>Behavioural Profiling</td><td><span class="tag tn">✕ Prohibited</span></td></tr>
+      </tbody></table></div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST -->
+<section class="sec" id="trust">
+  <div class="s-chip"><span class="n">06</span> Trust & Safety</div>
+  <h2 class="s-h2">Accountability <em>Framework</em></h2>
+  <div class="bar"></div>
+  <div class="trust-grid reveal">
+    <div class="tcol">
+      <h3>Penalty System</h3>
+      <div class="pen"><span class="pbadge pw">Warning</span><p>First violation: formal warning with mandatory educational intervention session.</p></div>
+      <div class="pen"><span class="pbadge pr">Restricted</span><p>Repeated misuse: temporary suspension of all emergency-trigger capabilities.</p></div>
+      <div class="pen"><span class="pbadge pb">Banned</span><p>Serious violations: permanent removal from the ResQNow platform ecosystem.</p></div>
+    </div>
+    <div class="tcol">
+      <h3>Reputation System</h3>
+      <div class="pen"><span class="pbadge pg">Report</span><p>Evidence-based complaint mechanism available to all users at all times.</p></div>
+      <div class="pen"><span class="pbadge pg">Verified</span><p>Proof-based review ensures no user is penalised without substantiated evidence.</p></div>
+      <div class="pen"><span class="pbadge pg">Score</span><p>Positive behaviour incrementally builds trust level and unlocks enhanced capabilities.</p></div>
+    </div>
+    <div class="tcol">
+      <h3>Safety Design</h3>
+      <div class="pen"><div><p style="margin-bottom:.75rem"><strong style="color:var(--white);font-weight:500">No risky engagement encouraged.</strong> Responders never instructed to place themselves in physical danger.</p><p style="margin-bottom:.75rem"><strong style="color:var(--white);font-weight:500">Helper safety prioritised.</strong> Clear guidance on safe observation and de-escalation provided at all times.</p><p><strong style="color:var(--white);font-weight:500">Auto-escalation for high risk.</strong> Complex situations automatically handed to professional emergency responders.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ECOSYSTEM -->
+<section class="sec alt" id="ecosystem">
+  <div class="s-chip"><span class="n">07</span> Ecosystem</div>
+  <h2 class="s-h2">Stakeholder <em>Architecture</em></h2>
+  <div class="bar"></div>
+  <p class="s-lead">ResQNow integrates responsibly with civil society, government, and community organisations — each with clearly defined roles and data access boundaries.</p>
+  <div class="eco-grid reveal">
+    <div class="eco-card"><div class="eco-org">Civil Society</div><h3>NGO Integration</h3><p>Non-governmental organisations play a vital outreach and support role without requiring user data access of any kind.</p><ul><li>Public awareness and safety education campaigns</li><li>Victim support and post-incident counselling</li><li>Community trust-building and outreach programmes</li><li>No private data access without explicit user consent</li></ul></div>
+    <div class="eco-card"><div class="eco-org">Government</div><h3>Police & Authorities</h3><p>Law enforcement notified only in confirmed high-risk escalation scenarios. ResQNow augments, never replaces, official response.</p><ul><li>Auto-notified in confirmed high-risk events only</li><li>Does not replace or compete with official services</li><li>Future API integration subject to legal framework</li><li>Data shared strictly as required by applicable law</li></ul></div>
+    <div class="eco-card"><div class="eco-org">Technology</div><h3>Platform Ethics</h3><p>The technology layer is governed by a strict ethical model prioritising user dignity, transparent operation, and accountability.</p><ul><li>Open ethical guideline documentation published</li><li>Privacy-by-design architectural mandate</li><li>Responsible disclosure and incident response policy</li><li>Community trust measured as a core performance KPI</li></ul></div>
+  </div>
+</section>
+
+<!-- LIMITATIONS -->
+<section class="sec" id="limitations">
+  <div class="s-chip"><span class="n">08</span> Limitations</div>
+  <h2 class="s-h2">Honest <em>Boundaries</em></h2>
+  <div class="bar"></div>
+  <p class="s-lead">ResQNow is designed with radical transparency. Understanding its limitations is as important as understanding its strengths.</p>
+  <div class="lim-grid reveal">
+    <div class="lcard"><div class="lnum">01</div><div><h4>Internet Dependency</h4><p>Requires stable internet connectivity. In areas with poor or no network coverage, response capabilities may be significantly compromised.</p></div></div>
+    <div class="lcard"><div class="lnum">02</div><div><h4>User Participation Required</h4><p>Effective response is contingent on an active community of verified users. Low adoption in an area directly reduces system utility.</p></div></div>
+    <div class="lcard"><div class="lnum">03</div><div><h4>No Guaranteed Response</h4><p>ResQNow cannot guarantee a verified responder will always be available or willing to assist in every emergency scenario.</p></div></div>
+    <div class="lcard"><div class="lnum">04</div><div><h4>Not a Replacement</h4><p>An assistive layer only — not a substitute for professional emergency services. Always use in conjunction with official resources.</p></div></div>
+  </div>
+</section>
+
+<!-- DISCLAIMER -->
+<section class="sec alt" id="disclaimer">
+  <div class="s-chip"><span class="n">09</span> Legal Notice</div>
+  <h2 class="s-h2">Legal & <em>Ethical Notice</em></h2>
+  <div class="bar"></div>
+  <div class="dis-box reveal">
+    <div class="dis-label">⚠ Important — Please Read Carefully</div>
+    <p><strong>ResQNow is a conceptual emergency response framework.</strong> It is a structured model proposed for academic, research, and design purposes. It does not constitute an active, deployed, or commercially available emergency service of any kind.</p>
+    <p><strong>ResQNow is not a substitute for official emergency services.</strong> In any real emergency, contact your local emergency services (police, fire, ambulance) as the primary and authoritative resource. This framework guarantees no response, outcome, or intervention.</p>
+    <p><strong>Users bear full responsibility</strong> for their use of any system built upon or inspired by this framework. The creators of ResQNow accept no liability for outcomes arising from reliance on this conceptual model.</p>
+    <p>Future implementations must be developed in accordance with applicable local laws and regulations, and adhere to principles of <strong>privacy respect</strong>, <strong>responsible use</strong>, <strong>misuse prevention</strong>, and <strong>community trust</strong>.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="fb-brand">ResQ<span>Now</span></div>
+      <div class="fb-sub">A privacy-first, community-driven emergency response framework. Conceptual model by ABHAYUNIX.</div>
+    </div>
+    <div class="fc">
+      <h5>Framework</h5>
+      <button onclick="scrollTo('about')">Introduction</button>
+      <button onclick="scrollTo('modes')">System Modes</button>
+      <button onclick="scrollTo('process')">Response Flow</button>
+      <button onclick="scrollTo('privacy')">Privacy Design</button>
+    </div>
+    <div class="fc">
+      <h5>Governance</h5>
+      <button onclick="scrollTo('data')">Data Policy</button>
+      <button onclick="scrollTo('trust')">Accountability</button>
+      <button onclick="scrollTo('ecosystem')">Ecosystem</button>
+      <button onclick="scrollTo('limitations')">Limitations</button>
+    </div>
+    <div class="fc">
+      <h5>Legal & Docs</h5>
+      <button onclick="show('doc-privacy')">Privacy Policy</button>
+      <button onclick="show('doc-legal')">Legal Framework</button>
+      <button onclick="show('doc-data')">Data Charter</button>
+      <button onclick="show('doc-terms')">Terms of Use</button>
+      <button onclick="show('doc-ethics')">Ethics Guide</button>
+      <button onclick="show('doc-faq')">FAQ</button>
+    </div>
+  </div>
+  <div class="footer-bot">
+    <p>© 2025 ResQNow Framework · ABHAYUNIX · All rights reserved · Conceptual use only</p>
+    <div class="fstatus">Framework Active</div>
+  </div>
+</footer>
+</div><!-- /page-home -->
+
+<!-- ════════════════════════════════════════════
+  DOC: PRIVACY POLICY
+════════════════════════════════════════════ -->
+<div id="page-doc-privacy" class="page">
+<div class="doc-wrap">
+  <div class="doc-top">
+    <button class="back-btn" onclick="goHome()"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Back to ResQNow</button>
+    <div class="doc-chip">Privacy Policy</div>
+    <h1 class="doc-h1">Privacy Policy</h1>
+    <p class="doc-meta">Last Updated: January 2025 · Version 1.0 · ResQNow Framework</p>
+  </div>
+  <div class="doc-body">
+    <div class="doc-toc"><h4>Table of Contents</h4><ol><li>Overview & Scope</li><li>What Data We Collect</li><li>How Data Is Used</li><li>Data Storage & Security</li><li>Data Retention & Deletion</li><li>Third-Party Sharing</li><li>User Rights & Controls</li><li>Location Data Policy</li><li>Children's Privacy</li><li>Policy Updates</li></ol></div>
+    <div class="dsec"><h2>1. Overview & Scope</h2>
+      <p>This Privacy Policy describes how ResQNow (the "Framework" or "System") collects, processes, stores, and deletes information in connection with the use of the ResQNow emergency response framework.</p>
+      <div class="ibox"><p>ResQNow is a <strong>conceptual framework</strong>. This policy describes the intended privacy design of any future implementation built upon ResQNow's principles.</p></div>
+      <p>ResQNow is designed on a <strong>Privacy-by-Default</strong> and <strong>Privacy-by-Design</strong> philosophy. Privacy protection is not an add-on — it is embedded into every architectural decision from the ground up. This policy applies to all users who interact with any ResQNow-based system.</p>
+    </div>
+    <div class="dsec"><h2>2. What Data We Collect</h2>
+      <h3>Data Collected Only During Emergency Events</h3>
+      <ul><li><strong>Precise Location Data</strong> — GPS coordinates, collected only upon explicit user activation, retained only for the minimum duration required to coordinate response.</li><li><strong>Alert Timestamp</strong> — The time at which an emergency trigger was activated, retained only for the event duration.</li><li><strong>Encrypted Communication Fragments</strong> — In-system messages between the distressed user and responders, encrypted end-to-end.</li></ul>
+      <h3>Account Registration Data</h3>
+      <ul><li>Name and contact information (for verified user identity only)</li><li>Emergency trusted contact details (user-specified and editable at any time)</li><li>Voluntary verification data (to establish community trust score)</li></ul>
+      <h3>Data We Never Collect</h3>
+      <div class="dbox"><p>ResQNow does <strong>not</strong> collect continuous location data, browsing behaviour, device identifiers beyond operational necessity, biometric data, financial information, or any data used for advertising purposes. This is a permanent architectural constraint.</p></div>
+    </div>
+    <div class="dsec"><h2>3. How Data Is Used</h2>
+      <p>All data collected within ResQNow is governed by strict purpose limitation. Data is used <strong>exclusively</strong> for:</p>
+      <ul><li>Dispatching real-time emergency alerts to verified nearby community members</li><li>Connecting distressed users with available, verified responders</li><li>Notifying pre-designated trusted contacts during an active emergency</li><li>Escalating to official emergency services when required</li><li>Detecting and preventing misuse of the emergency alert system</li><li>Maintaining the integrity of the community trust and reputation system</li></ul>
+      <div class="dbox"><p>Data is <strong>never</strong> used for advertising, marketing, commercial profiling, or sale to third parties under any circumstances.</p></div>
+    </div>
+    <div class="dsec"><h2>4. Data Storage & Security</h2>
+      <p>All data is stored on <strong>secure, audited cloud infrastructure</strong> with the following security controls in place:</p>
+      <ul><li><strong>End-to-End Encryption (E2EE)</strong> — All data encrypted both in transit and at rest using industry-standard cryptographic protocols.</li><li><strong>Access Controls</strong> — Strict role-based access controls limit which system components can access which data categories.</li><li><strong>Audit Logging</strong> — All data access events are logged and retained for security auditing purposes only.</li><li><strong>No Third-Party Access</strong> — No external parties, including NGOs or commercial entities, have access to user data unless explicitly authorised by the user.</li></ul>
+    </div>
+    <div class="dsec"><h2>5. Data Retention & Deletion</h2>
+      <ul><li><strong>Emergency event data</strong> — Automatically and permanently deleted upon event resolution, or within 24 hours, whichever comes first.</li><li><strong>Account data</strong> — Retained only for the duration of an active user account. Deleted within 30 days of account closure.</li><li><strong>Audit logs</strong> — Retained for a maximum of 90 days for security purposes only.</li></ul>
+      <div class="ibox"><p>Deletion is <strong>automatic and irreversible</strong>. ResQNow does not maintain data backups beyond operational necessity. No deleted data can be recovered.</p></div>
+    </div>
+    <div class="dsec"><h2>6. Third-Party Sharing</h2>
+      <p>ResQNow <strong>does not sell, rent, or trade user data</strong> to any third party. Limited, conditional data sharing occurs only in the following circumstances:</p>
+      <ul><li><strong>Emergency Service Escalation</strong> — Minimum necessary location data may be shared with official emergency services during an active high-risk event.</li><li><strong>Legal Obligations</strong> — Data may be disclosed in response to a valid legal order to the minimum extent required.</li><li><strong>Explicit User Consent</strong> — With clear, informed, and revocable consent, a user may choose to share event data with NGOs or other support organisations.</li></ul>
+    </div>
+    <div class="dsec"><h2>7. User Rights & Controls</h2>
+      <ul><li><strong>Right of Access</strong> — Request a copy of all data held about you at any time.</li><li><strong>Right to Erasure</strong> — Request immediate deletion of your account and all associated data.</li><li><strong>Right to Correction</strong> — Update or correct any inaccurate personal information.</li><li><strong>Right to Portability</strong> — Receive a machine-readable export of your data.</li><li><strong>Right to Withdraw Consent</strong> — Revoke any previously granted data permissions at any time without consequence.</li><li><strong>Right to Object</strong> — Object to specific processing activities at any time.</li></ul>
+    </div>
+    <div class="dsec"><h2>8. Location Data Policy</h2>
+      <ul><li>Location is <strong>never</strong> collected passively or in the background.</li><li>Location collection is triggered <strong>exclusively</strong> by a deliberate user action (emergency activation).</li><li>Location access is <strong>time-limited</strong> to the active emergency window only.</li><li>Location data is <strong>never</strong> shared with advertisers, data brokers, or commercial entities.</li><li>Location history is <strong>never</strong> built or maintained for any user under any circumstance.</li></ul>
+    </div>
+    <div class="dsec"><h2>9. Children's Privacy</h2>
+      <p>ResQNow does not knowingly collect data from individuals under the age of 13. Parental or guardian consent is required for use by individuals aged 13–17. Accounts identified as belonging to children under 13 will be immediately deactivated and all associated data deleted without delay.</p>
+    </div>
+    <div class="dsec"><h2>10. Policy Updates</h2>
+      <p>This policy may be updated to reflect changes in the framework design, legal requirements, or operational practices. Users will be notified of material changes at least 30 days in advance. Continued use after the effective date constitutes acceptance of the updated policy.</p>
+    </div>
+  </div>
+</div>
+<footer><div class="footer-bot" style="padding:2rem 5vw"><p>© 2025 ResQNow Framework · ABHAYUNIX</p><button class="btn btn-outline" onclick="goHome()" style="font-size:.75rem;padding:8px 18px;cursor:none">← Back to Home</button></div></footer>
+</div>
+
+<!-- ════ DOC: LEGAL FRAMEWORK ════ -->
+<div id="page-doc-legal" class="page">
+<div class="doc-wrap">
+  <div class="doc-top">
+    <button class="back-btn" onclick="goHome()"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Back to ResQNow</button>
+    <div class="doc-chip">Legal Framework</div>
+    <h1 class="doc-h1">Legal Framework</h1>
+    <p class="doc-meta">Last Updated: January 2025 · Version 1.0 · ResQNow Framework</p>
+  </div>
+  <div class="doc-body">
+    <div class="doc-toc"><h4>Table of Contents</h4><ol><li>Legal Status of ResQNow</li><li>Applicable Laws & Regulations</li><li>User Liability</li><li>Platform Liability Limitations</li><li>Emergency Service Relationship</li><li>Government & Police Integration</li><li>Intellectual Property</li><li>Dispute Resolution</li><li>Jurisdiction</li></ol></div>
+    <div class="dsec"><h2>1. Legal Status of ResQNow</h2>
+      <div class="dbox"><p>ResQNow is a <strong>conceptual framework</strong> — not a licensed, certified, or government-approved emergency service. It does not hold any status as an official emergency response operator in any jurisdiction.</p></div>
+      <p>ResQNow operates as an <strong>assistive technology framework</strong> — a supplement to, not a replacement for, official emergency services. Its legal design is non-regulatory in nature, functioning within the bounds of civic technology and community assistance.</p>
+      <p>Any organisation seeking to deploy a system based on the ResQNow framework must independently obtain all required licences, regulatory approvals, and legal clearances applicable in their jurisdiction before deployment.</p>
+    </div>
+    <div class="dsec"><h2>2. Applicable Laws & Regulations</h2>
+      <p>Any implementation of ResQNow must comply with, but not be limited to, the following categories of law:</p>
+      <h3>Data Protection Law</h3>
+      <ul><li><strong>General Data Protection Regulation (GDPR)</strong> — European Union and EEA users</li><li><strong>Information Technology Act, 2000 & DPDP Act, 2023</strong> — India-based implementations</li><li><strong>California Consumer Privacy Act (CCPA)</strong> — California users</li><li>All locally applicable national and regional data protection legislation</li></ul>
+      <h3>Emergency Services Law</h3>
+      <ul><li>National emergency communications regulations in the operating jurisdiction</li><li>Laws governing the impersonation of or interference with official emergency services</li><li>Regulations specific to community first-responder programmes where applicable</li></ul>
+      <h3>Technology & Telecommunications Law</h3>
+      <ul><li>Laws governing location data access and sharing</li><li>Telecommunications licensing requirements for alert-based services</li><li>Cybersecurity and data breach notification obligations</li></ul>
+    </div>
+    <div class="dsec"><h2>3. User Liability</h2>
+      <ul><li>Users are responsible for the <strong>truthful and genuine use</strong> of the emergency alert system. False or malicious alerts are prohibited and may be subject to legal action.</li><li>Community responders acknowledge their assistance is entirely <strong>voluntary</strong> and that they will not place themselves in unnecessary danger.</li><li>Users are responsible for maintaining the <strong>confidentiality of their account credentials</strong>.</li><li>Serious misuse may result in suspension, permanent ban, and <strong>referral to law enforcement</strong>.</li></ul>
+      <div class="cbox"><p>Intentionally triggering false emergency alerts may constitute a criminal offence under applicable law in many jurisdictions. Users do so entirely at their own legal risk.</p></div>
+    </div>
+    <div class="dsec"><h2>4. Platform Liability Limitations</h2>
+      <p>ResQNow and any implementing organisation expressly disclaim liability for: failure to respond due to no available users, technical failures or outages, actions taken by community responders in good faith, outcomes of emergency events including injury or loss, and inaccurate information provided by users during an event.</p>
+      <p>To the maximum extent permitted by applicable law, the ResQNow framework is provided "as is" without warranties of any kind, express or implied.</p>
+    </div>
+    <div class="dsec"><h2>5. Emergency Service Relationship</h2>
+      <p>ResQNow is designed as a <strong>complementary layer</strong> alongside official emergency services. ResQNow systems are designed to provide a faster, community-level first response during the critical window before official services arrive — and to automatically escalate to official services when the situation warrants it. ResQNow never positions itself as a licensed emergency dispatch service and never discourages users from contacting official services directly.</p>
+    </div>
+    <div class="dsec"><h2>6. Government & Police Integration</h2>
+      <ul><li>All integrations subject to formal legal agreements and data sharing protocols</li><li>Law enforcement notified only during confirmed high-risk emergency escalations</li><li>All data shared with authorities will be the <strong>minimum necessary</strong> for the situation</li><li>Users will be informed where legally permissible that authorities have been notified</li><li>Future government API integration requires legislative review and approval</li></ul>
+    </div>
+    <div class="dsec"><h2>7. Intellectual Property</h2>
+      <p>The ResQNow framework documentation, design system, architectural models, and conceptual documents are the intellectual property of ABHAYUNIX. Any commercial implementation based on ResQNow principles requires written authorisation from ABHAYUNIX. All derivative works must clearly acknowledge the ResQNow framework as the source model.</p>
+    </div>
+    <div class="dsec"><h2>8. Dispute Resolution</h2>
+      <p>Any disputes arising from the use of a ResQNow-based system will first be subject to good-faith negotiation. Unresolved disputes will be referred to binding arbitration in accordance with the rules of the relevant jurisdiction.</p>
+    </div>
+    <div class="dsec"><h2>9. Jurisdiction</h2>
+      <p>The ResQNow conceptual framework is developed and maintained by ABHAYUNIX under Indian law. Implementing organisations must ensure compliance with all laws in their operating jurisdiction. Where conflicts exist between this framework and local law, local law takes precedence.</p>
+    </div>
+  </div>
+</div>
+<footer><div class="footer-bot" style="padding:2rem 5vw"><p>© 2025 ResQNow Framework · ABHAYUNIX</p><button class="btn btn-outline" onclick="goHome()" style="font-size:.75rem;padding:8px 18px;cursor:none">← Back to Home</button></div></footer>
+</div>
+
+<!-- ════ DOC: DATA CHARTER ════ -->
+<div id="page-doc-data" class="page">
+<div class="doc-wrap">
+  <div class="doc-top">
+    <button class="back-btn" onclick="goHome()"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Back to ResQNow</button>
+    <div class="doc-chip">Data Charter</div>
+    <h1 class="doc-h1">Data Charter</h1>
+    <p class="doc-meta">Last Updated: January 2025 · Version 1.0 · ResQNow Framework</p>
+  </div>
+  <div class="doc-body">
+    <div class="doc-toc"><h4>Table of Contents</h4><ol><li>Our Data Philosophy</li><li>Data We Collect</li><li>Data We Never Collect</li><li>How Data Flows Through the System</li><li>Security Architecture</li><li>Breach Response Protocol</li><li>Data Access Hierarchy</li><li>User Data Rights</li></ol></div>
+    <div class="dsec"><h2>1. Our Data Philosophy</h2>
+      <div class="ibox"><p>ResQNow is built on a single guiding principle: <strong>collect the minimum, protect the maximum, delete the fastest.</strong></p></div>
+      <p>Data is not an asset in ResQNow — it is a responsibility. Every data decision is evaluated against one question: <em>"Is this strictly necessary to save someone's life or protect their safety?"</em> If the answer is no, the data is not collected. ResQNow rejects the "collect everything, figure out use cases later" approach dominant in modern technology.</p>
+    </div>
+    <div class="dsec"><h2>2. Data We Collect</h2>
+      <h3>Emergency Event Data (Ephemeral)</h3>
+      <ul><li><strong>GPS Coordinates</strong> — Precision location, collected only upon activation, deleted immediately on resolution.</li><li><strong>Event Timestamp</strong> — Start/end time of emergency event. Retained only during the event window.</li><li><strong>Encrypted Responder Messages</strong> — In-event communication between parties. E2E encrypted, deleted post-event.</li></ul>
+      <h3>Account Data (Persistent, User-Controlled)</h3>
+      <ul><li>Name, phone number, email — for account identity only.</li><li>Emergency trusted contact names and numbers — editable at any time.</li><li>Verification status — whether user has completed optional identity verification.</li><li>Trust/reputation score — computed from interaction history, anonymised aggregate.</li></ul>
+    </div>
+    <div class="dsec"><h2>3. Data We Never Collect</h2>
+      <div class="dbox"><p>The following categories are <strong>permanently and architecturally excluded</strong> from ResQNow. They cannot be collected, even through future updates, without a complete policy revision and explicit user consent.</p></div>
+      <ul><li>Continuous or passive background location data</li><li>Browsing history, app usage, or device activity</li><li>Financial or payment information</li><li>Biometric data of any kind</li><li>Advertising identifiers or third-party tracking cookies</li><li>Behavioural profiling data or social graph mapping</li></ul>
+    </div>
+    <div class="dsec"><h2>4. How Data Flows Through the System</h2>
+      <p><strong>Step 1 — Activation:</strong> User activates emergency. Device requests location permission with full transparency about what is being collected and why.</p>
+      <p><strong>Step 2 — In-Event:</strong> Location and event data held in encrypted volatile storage. Only authorised system processes and verified responders (via encrypted channels) can access event data.</p>
+      <p><strong>Step 3 — Escalation (if needed):</strong> Minimum necessary data shared with emergency services under automatic logging.</p>
+      <p><strong>Step 4 — Resolution:</strong> All event data queued for immediate deletion upon user-confirmed or system-detected resolution.</p>
+      <p><strong>Step 5 — Post-Event:</strong> Deletion confirmed and logged. User receives confirmation of data deletion within 24 hours of event closing.</p>
+    </div>
+    <div class="dsec"><h2>5. Security Architecture</h2>
+      <ul><li><strong>AES-256 Encryption at Rest</strong> — Industry-standard encryption for all stored data.</li><li><strong>TLS 1.3 in Transit</strong> — All data transmission uses minimum TLS 1.3 protocol.</li><li><strong>Zero-Knowledge Design</strong> — ResQNow operators cannot access the content of encrypted user communications.</li><li><strong>Least Privilege Access</strong> — Each system component can only access data it strictly requires for its function.</li><li><strong>Regular Penetration Testing</strong> — Security posture validated by independent third parties on a regular schedule.</li></ul>
+    </div>
+    <div class="dsec"><h2>6. Breach Response Protocol</h2>
+      <ul><li><strong>Within 1 hour:</strong> Internal incident declared, breach response team activated.</li><li><strong>Within 24 hours:</strong> Affected users notified by direct communication.</li><li><strong>Within 72 hours:</strong> Regulatory authorities notified as required by applicable law (e.g., GDPR Article 33).</li><li><strong>Within 7 days:</strong> Full public disclosure of the nature, scope, and remediation of the breach.</li></ul>
+    </div>
+    <div class="dsec"><h2>7. Data Access Hierarchy</h2>
+      <div class="tbl-wrap"><table><thead><tr><th>Entity</th><th>Access Level</th><th>Conditions</th></tr></thead><tbody>
+        <tr><td>Automated System Processes</td><td><span class="tag ty">Full Event Data</span></td><td>Operational necessity only</td></tr>
+        <tr><td>Verified Responders</td><td><span class="tag ty">Location Only</span></td><td>Active event, encrypted channel</td></tr>
+        <tr><td>Trusted Contacts</td><td><span class="tag ty">Alert Notification</span></td><td>User pre-specified</td></tr>
+        <tr><td>Emergency Services</td><td><span class="tag ty">Minimum Necessary</span></td><td>Escalation events only</td></tr>
+        <tr><td>NGOs / Third Parties</td><td><span class="tag tn">No Access</span></td><td>Only with explicit user consent</td></tr>
+        <tr><td>Advertisers</td><td><span class="tag tn">Permanently Excluded</span></td><td>No conditions whatsoever</td></tr>
+      </tbody></table></div>
+    </div>
+    <div class="dsec"><h2>8. User Data Rights</h2>
+      <p>Every user has the right to access, correct, export, restrict processing of, and permanently delete their data. Requests are fulfilled within 30 days. Emergency event data is subject to faster deletion timelines as described in Section 4.</p>
+    </div>
+  </div>
+</div>
+<footer><div class="footer-bot" style="padding:2rem 5vw"><p>© 2025 ResQNow Framework · ABHAYUNIX</p><button class="btn btn-outline" onclick="goHome()" style="font-size:.75rem;padding:8px 18px;cursor:none">← Back to Home</button></div></footer>
+</div>
+
+<!-- ════ DOC: TERMS ════ -->
+<div id="page-doc-terms" class="page">
+<div class="doc-wrap">
+  <div class="doc-top">
+    <button class="back-btn" onclick="goHome()"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Back to ResQNow</button>
+    <div class="doc-chip">Terms of Use</div>
+    <h1 class="doc-h1">Terms of Use</h1>
+    <p class="doc-meta">Last Updated: January 2025 · Version 1.0 · ResQNow Framework</p>
+  </div>
+  <div class="doc-body">
+    <div class="doc-toc"><h4>Table of Contents</h4><ol><li>Acceptance of Terms</li><li>Nature of Service</li><li>Eligibility</li><li>Permitted Use</li><li>Prohibited Conduct</li><li>Community Responder Terms</li><li>Account Termination</li><li>Modifications to Terms</li></ol></div>
+    <div class="dsec"><h2>1. Acceptance of Terms</h2>
+      <p>By accessing, registering for, or using any ResQNow-based system ("Service"), you agree to be bound by these Terms of Use. If you do not agree with any part of these Terms, you must not use the Service.</p>
+      <div class="cbox"><p>These Terms constitute a <strong>legally binding agreement</strong> between you and the operating organisation. Please read them carefully before use.</p></div>
+    </div>
+    <div class="dsec"><h2>2. Nature of Service</h2>
+      <p>ResQNow is a <strong>community-assisted emergency support framework</strong>. It is an assistive tool designed to complement — not replace — official emergency services. By using ResQNow, you acknowledge that: ResQNow does not guarantee emergency response in any situation; it is not a licensed emergency dispatch service; in any life-threatening emergency you must contact official emergency services directly; and ResQNow response is dependent on voluntary community participation and cannot be assured.</p>
+    </div>
+    <div class="dsec"><h2>3. Eligibility</h2>
+      <ul><li>Users must be <strong>13 years of age or older</strong>. Users aged 13–17 require verifiable parental or guardian consent.</li><li>Users must provide <strong>accurate and truthful information</strong> during registration.</li><li>Community responders must complete the required verification process before accepting alerts.</li><li>Users previously banned from a ResQNow-based system are ineligible to re-register without explicit approval.</li></ul>
+    </div>
+    <div class="dsec"><h2>4. Permitted Use</h2>
+      <ul><li>Activating emergency alerts in genuine situations where you or someone nearby requires urgent assistance.</li><li>Voluntarily accepting and responding to community emergency alerts as a verified responder.</li><li>Maintaining and updating your trusted contact list and account settings.</li><li>Reporting suspected misuse of the emergency system through official channels.</li></ul>
+    </div>
+    <div class="dsec"><h2>5. Prohibited Conduct</h2>
+      <div class="dbox"><p>The following behaviours are <strong>strictly prohibited</strong> and may result in permanent ban and referral to law enforcement.</p></div>
+      <ul><li>Triggering false or malicious emergency alerts</li><li>Impersonating another user or verified responder</li><li>Using ResQNow to harass, stalk, or target another individual</li><li>Attempting to reverse-engineer or compromise system security</li><li>Sharing access credentials with any other person</li><li>Using ResQNow for any commercial, advertising, or data-harvesting purpose</li><li>Interfering with the operation of official emergency services</li></ul>
+    </div>
+    <div class="dsec"><h2>6. Community Responder Terms</h2>
+      <ul><li>Responder participation is entirely <strong>voluntary</strong>. You may decline any alert at any time.</li><li>You will <strong>never place yourself in unreasonable danger</strong> when responding to an alert.</li><li>When in doubt, you will <strong>contact official emergency services</strong> rather than attempting to handle situations beyond your capacity.</li><li>You will not share the location or details of a distressed user with any unauthorised third party.</li></ul>
+    </div>
+    <div class="dsec"><h2>7. Account Termination</h2>
+      <p>Accounts may be terminated by either party. You may close your account at any time through account settings. ResQNow reserves the right to suspend or terminate accounts for violation of these Terms, repeated misuse of the emergency alert system, providing false information during registration, or conduct deemed harmful to the community. Upon termination, all account and event data will be deleted within 30 days.</p>
+    </div>
+    <div class="dsec"><h2>8. Modifications to Terms</h2>
+      <p>These Terms may be updated periodically. Material changes will be communicated at least 30 days before taking effect. Continued use of the Service after the effective date of updated Terms constitutes acceptance. It is your responsibility to review Terms periodically for any changes.</p>
+    </div>
+  </div>
+</div>
+<footer><div class="footer-bot" style="padding:2rem 5vw"><p>© 2025 ResQNow Framework · ABHAYUNIX</p><button class="btn btn-outline" onclick="goHome()" style="font-size:.75rem;padding:8px 18px;cursor:none">← Back to Home</button></div></footer>
+</div>
+
+<!-- ════ DOC: ETHICS ════ -->
+<div id="page-doc-ethics" class="page">
+<div class="doc-wrap">
+  <div class="doc-top">
+    <button class="back-btn" onclick="goHome()"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Back to ResQNow</button>
+    <div class="doc-chip">Ethics Guide</div>
+    <h1 class="doc-h1">Ethics & Responsible Use Guide</h1>
+    <p class="doc-meta">Last Updated: January 2025 · Version 1.0 · ResQNow Framework</p>
+  </div>
+  <div class="doc-body">
+    <div class="doc-toc"><h4>Table of Contents</h4><ol><li>Our Ethical Foundation</li><li>The Four Core Ethical Principles</li><li>Responsible Use Standards</li><li>AI & Automation Ethics</li><li>Community Ethics</li><li>Ethical Red Lines</li><li>Ethical Accountability</li></ol></div>
+    <div class="dsec"><h2>1. Our Ethical Foundation</h2>
+      <div class="ibox"><p>ResQNow was built on a belief that <strong>technology in the service of human safety must be held to a higher ethical standard than technology in the service of commerce.</strong></p></div>
+      <p>When a system has the potential to be used during someone's most vulnerable moment — when their safety or life is at risk — the designers of that system bear an extraordinary moral responsibility. ResQNow does not take this responsibility lightly. These ethics are not aspirational — they are binding design constraints.</p>
+    </div>
+    <div class="dsec"><h2>2. The Four Core Ethical Principles</h2>
+      <h3>I. Privacy as a Human Right</h3>
+      <p>Privacy is not a commodity to be traded against convenience. It is a fundamental human right. ResQNow treats privacy as non-negotiable — no feature, no matter how useful, justifies the erosion of user privacy without explicit, informed consent.</p>
+      <h3>II. Beneficence — Help, Never Harm</h3>
+      <p>Every design decision must actively promote safety and wellbeing. ResQNow systems must never be designed in a way that could increase risk, enable surveillance, facilitate harassment, or cause harm to any individual.</p>
+      <h3>III. Autonomy & Informed Consent</h3>
+      <p>Users must always understand what they are agreeing to, what data is being collected, and how it will be used — in plain, clear language. Consent must be granular, revocable, and freely given without coercion of any kind.</p>
+      <h3>IV. Accountability Without Exception</h3>
+      <p>Every part of ResQNow — from the algorithm to the human operators — must be accountable for its actions. Opacity, obscurity, and "black box" decision-making are incompatible with ResQNow's ethical design principles.</p>
+    </div>
+    <div class="dsec"><h2>3. Responsible Use Standards</h2>
+      <ul><li>Use the emergency alert only for genuine situations requiring urgent assistance.</li><li>As a responder, never accept alerts you are not prepared or qualified to handle safely.</li><li>Treat all parties involved with dignity and respect at all times.</li><li>Do not use the platform to gather information about other users beyond what is necessary for an active emergency.</li><li>Report misuse when you encounter it — safeguarding the community is a shared responsibility.</li></ul>
+    </div>
+    <div class="dsec"><h2>4. AI & Automation Ethics</h2>
+      <p>ResQNow uses automated processes for alert dispatch, responder matching, and misuse detection. These systems are held to the following ethical standards:</p>
+      <ul><li><strong>Explainability</strong> — Automated decisions that affect users must be explainable in plain language.</li><li><strong>Fairness</strong> — Algorithms must not discriminate based on race, gender, location, religion, disability, or any protected characteristic.</li><li><strong>Human Override</strong> — All automated decisions can be reviewed and overridden by authorised human administrators.</li><li><strong>Regular Auditing</strong> — Automated systems are subject to regular ethical audits to detect and correct bias or unintended behaviour.</li></ul>
+    </div>
+    <div class="dsec"><h2>5. Community Ethics</h2>
+      <ul><li><strong>Good Faith</strong> — Engage with the system and with other users in genuine good faith at all times.</li><li><strong>Non-Exploitation</strong> — Never exploit a vulnerable person's emergency situation for any personal gain.</li><li><strong>Mutual Respect</strong> — Treat every user with the dignity and care you would wish for yourself in an emergency.</li><li><strong>Shared Responsibility</strong> — A safer community is built by everyone. Active, honest participation strengthens the entire network.</li></ul>
+    </div>
+    <div class="dsec"><h2>6. Ethical Red Lines</h2>
+      <div class="dbox"><p>The following are <strong>absolute prohibitions</strong> that cannot be overridden by any business, legal, or operational consideration under any circumstances.</p></div>
+      <ul><li>ResQNow will never be used as a surveillance tool.</li><li>ResQNow data will never be monetised through advertising or sale.</li><li>ResQNow will never be used to target individuals based on protected characteristics.</li><li>ResQNow will never be deployed by authoritarian entities for population monitoring or control.</li><li>ResQNow will never introduce dark patterns designed to manipulate users into sharing more data than they intend to.</li></ul>
+    </div>
+    <div class="dsec"><h2>7. Ethical Accountability</h2>
+      <p>ABHAYUNIX and any ResQNow operator are accountable for upholding these ethics through: annual public ethics audits by independent third parties; a dedicated ethics review panel with community representation; an open channel for users to raise ethical concerns or violations; and full transparency in the event of any ethical failure.</p>
+    </div>
+  </div>
+</div>
+<footer><div class="footer-bot" style="padding:2rem 5vw"><p>© 2025 ResQNow Framework · ABHAYUNIX</p><button class="btn btn-outline" onclick="goHome()" style="font-size:.75rem;padding:8px 18px;cursor:none">← Back to Home</button></div></footer>
+</div>
+
+<!-- ════ DOC: FAQ ════ -->
+<div id="page-doc-faq" class="page">
+<div class="doc-wrap">
+  <div class="doc-top">
+    <button class="back-btn" onclick="goHome()"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Back to ResQNow</button>
+    <div class="doc-chip">FAQ</div>
+    <h1 class="doc-h1">Frequently Asked Questions</h1>
+    <p class="doc-meta">Last Updated: January 2025 · Version 1.0 · ResQNow Framework</p>
+  </div>
+  <div class="doc-body">
+    <div class="dsec"><h2>General Questions</h2>
+      <h3>What is ResQNow?</h3>
+      <p>ResQNow is a conceptual emergency response framework that proposes a community-based, privacy-first approach to improving safety outcomes. It is not a live service — it is a structured reference model for future emergency response systems developed by ABHAYUNIX.</p>
+      <h3>Is ResQNow a replacement for 112 / emergency services?</h3>
+      <p><strong>Absolutely not.</strong> ResQNow is designed as a complementary layer that operates alongside official emergency services. In any emergency, always contact official emergency services first. ResQNow is designed to provide community-level support during the critical window before professional services arrive.</p>
+      <h3>Who built ResQNow?</h3>
+      <p>ResQNow was conceived and designed by ABHAYUNIX as a conceptual framework for community safety technology.</p>
+    </div>
+    <div class="dsec"><h2>Privacy Questions</h2>
+      <h3>Does ResQNow track my location at all times?</h3>
+      <p><strong>No.</strong> ResQNow never collects location data passively or in the background. Location is accessed only when you explicitly activate an emergency alert, and only for the duration of that event. Your location is deleted immediately upon resolution.</p>
+      <h3>Can NGOs or third parties see my data?</h3>
+      <p><strong>No.</strong> Third parties, including NGOs, have no access to your data unless you explicitly grant permission on a case-by-case basis with fully informed consent.</p>
+      <h3>Will my data be sold to advertisers?</h3>
+      <p><strong>Never.</strong> ResQNow's data policy permanently and architecturally prohibits the use of user data for advertising or commercial purposes. This is a non-negotiable core principle, not a policy preference.</p>
+      <h3>How long is my emergency data kept?</h3>
+      <p>Emergency event data is automatically and permanently deleted upon resolution of the event, or within 24 hours — whichever comes first. You receive a deletion confirmation within 24 hours of the event closing.</p>
+    </div>
+    <div class="dsec"><h2>Safety Questions</h2>
+      <h3>Is it safe to respond to an alert as a community responder?</h3>
+      <p>ResQNow is explicitly designed to never encourage responders to put themselves in danger. The platform provides guidance on safe observation, de-escalation, and when to hand off to official services. You may decline or withdraw at any point without consequence.</p>
+      <h3>What happens if no one responds to my alert?</h3>
+      <p>If no community responders are available, ResQNow is designed to automatically escalate to official emergency services. However, you should always contact emergency services directly and not rely solely on the community network.</p>
+      <h3>What if someone misuses the emergency alert?</h3>
+      <p>ResQNow has a multi-layered misuse prevention system including reporting mechanisms, evidence-based reviews, and a penalty framework. First-time misuse results in a warning; repeated misuse leads to restriction and eventually permanent ban. Serious or criminal misuse may be referred to law enforcement.</p>
+    </div>
+    <div class="dsec"><h2>Technical Questions</h2>
+      <h3>Does ResQNow work without internet?</h3>
+      <p>In its current conceptual design, ResQNow requires an active internet connection. Emergency alerts, location sharing, and responder coordination all depend on network connectivity. Future versions may explore offline or SMS-based fallback mechanisms.</p>
+      <h3>How are responders verified?</h3>
+      <p>Community responders are verified through a registration and onboarding process that may include identity verification, background checks (depending on jurisdiction), and completion of safety training modules.</p>
+    </div>
+    <div class="dsec"><h2>Legal Questions</h2>
+      <h3>Am I legally protected if I respond as a community responder?</h3>
+      <p>Legal protection for good-faith emergency assistance ("Good Samaritan" laws) varies significantly by jurisdiction. ResQNow recommends that any implementation provides users with jurisdiction-specific legal guidance on responder protections. Always act within your capacity.</p>
+      <h3>Can police access my ResQNow data?</h3>
+      <p>Law enforcement can only receive data during an active high-risk escalation event, and only the minimum necessary information. Data may also be disclosed in response to a valid legal order as required by applicable law.</p>
+    </div>
+  </div>
+</div>
+<footer><div class="footer-bot" style="padding:2rem 5vw"><p>© 2025 ResQNow Framework · ABHAYUNIX</p><button class="btn btn-outline" onclick="goHome()" style="font-size:.75rem;padding:8px 18px;cursor:none">← Back to Home</button></div></footer>
+</div>
+
+<!-- ════════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════ -->
+<script>
+/* CURSOR */
+const cur=document.getElementById('cur');
+const cdot=cur.querySelector('.c-dot');
+const ctrail=cur.querySelector('.c-trail');
+let mx=0,my=0,tx=0,ty=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cdot.style.left=mx+'px';cdot.style.top=my+'px'});
+(function loop(){tx+=(mx-tx)*.13;ty+=(my-ty)*.13;ctrail.style.left=tx+'px';ctrail.style.top=ty+'px';requestAnimationFrame(loop)})();
+
+/* PAGE ROUTER */
+function show(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const p=document.getElementById('page-'+id);
+  if(p){p.classList.add('active');window.scrollTo({top:0,behavior:'instant'});attachReveal()}
+}
+function goHome(){show('home');setTimeout(()=>window.scrollTo({top:0,behavior:'smooth'}),50)}
+function scrollTo(id){
+  show('home');
+  setTimeout(()=>{const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})},80)
+}
+
+/* REVEAL ON SCROLL */
+const ro=new IntersectionObserver(en=>{en.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')})},{threshold:.1});
+function attachReveal(){document.querySelectorAll('.reveal,.tstep').forEach(el=>{el.classList.remove('in');ro.observe(el)})}
+attachReveal();
+
+/* STAGGER STEPS */
+document.querySelectorAll('.tstep').forEach((s,i)=>s.style.transitionDelay=i*.08+'s');
+
+/* NAV SCROLL HIGHLIGHT */
+window.addEventListener('scroll',()=>{
+  const ids=['about','modes','process','privacy','ecosystem'];
+  let cur='';
+  ids.forEach(id=>{const el=document.getElementById(id);if(el&&window.scrollY>=el.offsetTop-120)cur=id});
+  document.querySelectorAll('.nl').forEach(a=>{a.classList.remove('on')});
+});
+</script>
+</body>
+</html>
